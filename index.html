@@ -71,13 +71,13 @@
     100%{transform:translate(var(--dx),-104vh); opacity:0}
   }
 
-  .topbar{position:relative; z-index:5; display:flex; justify-content:space-between; align-items:center; gap:12px;
+  .topbar{position:relative; z-index:5; display:flex; justify-content:space-between; align-items:center; gap:10px;
     padding:calc(12px + env(safe-area-inset-top)) 20px 10px;}
-  .brand{display:flex; gap:10px; align-items:center; font:600 11.5px/1 "Rubik"; letter-spacing:.22em; color:var(--muted); text-transform:uppercase;}
-  .brand .bolt{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;color:#231a05;
+  .brand{display:flex; gap:10px; align-items:center; font:600 11px/1 "Rubik"; letter-spacing:.12em; color:var(--muted); text-transform:uppercase; white-space:nowrap; overflow:hidden;}
+  .brand .bolt{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;color:#231a05;flex-shrink:0;
     background:linear-gradient(160deg,#ffd063,#f59d17);
     box-shadow:0 4px 14px rgba(255,170,40,.35), inset 0 1px 0 rgba(255,255,255,.5);}
-  .date{font:500 12px "Rubik"; color:var(--muted); letter-spacing:.04em; text-transform:capitalize;}
+  .date{font:500 12px "Rubik"; color:var(--muted); letter-spacing:.04em; text-transform:capitalize; white-space:nowrap; flex-shrink:0;}
   main{position:relative; z-index:2; flex:1; display:flex; flex-direction:column;}
   .screen{display:none; flex:1; flex-direction:column;}
   .screen.active{display:flex;}
@@ -660,7 +660,7 @@
       <span class="bolt">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4.8 13.4h5.3L10.6 22l8.6-11.4h-5.3L13 2Z"/></svg>
       </span>
-      ШТРОБЛЕНИЕ · ЭЛЕКТРОМОНТАЖ
+      СЕРЖ · ЭЛЕКТРОМОНТАЖ
     </div>
     <div class="date" id="today"></div>
   </header>
@@ -704,7 +704,7 @@
         </div>
         <div class="status"><span class="dot"></span> Готов к работе</div>
         <button id="installAppBtn" class="install-btn">📲 Установить приложение</button>
-        <div class="app-version" id="appVersion">version 1.81.0</div>
+        <div class="app-version" id="appVersion">version 1.81.1</div>
       </div>
     </section>
 
@@ -1251,7 +1251,10 @@ async function svc_saveViaFolder(){
       const name = svc_pendingSave.filename;
       const isPdf = name.toLowerCase().endsWith('.pdf'); const isJson = name.toLowerCase().endsWith('.json');
       const handle = await showSaveFilePicker({ suggestedName: name, types: [{ description: isPdf ? 'PDF документ' : (isJson ? 'Данные сметы (JSON)' : 'Файл'), accept: isPdf ? {'application/pdf':['.pdf']} : (isJson ? {'application/json':['.json']} : {}) }] });
-      const w = await handle.createWritable(); await w.write(svc_pendingSave.blob); await w.close();
+      const w = await handle.createWritable();
+      // ИСПРАВЛЕНО: пишем arrayBuffer, а не blob — иначе файл может быть битым
+      await w.write(await svc_pendingSave.blob.arrayBuffer());
+      await w.close();
       svc_closeSavePicker(); showToast('Файл сохранён в выбранную папку');
     }catch(err){ if(err && err.name === 'AbortError'){ svc_closeSavePicker(); return; } showToast('Не удалось сохранить: ' + err.message); }
   } else { showToast('Браузер не поддерживает выбор папки. Используй «Быстро сохранить»'); }
@@ -1271,7 +1274,9 @@ async function exportDB(){
   if (window.showSaveFilePicker) {
     try {
       const handle = await showSaveFilePicker({ suggestedName: filename, types: [{ description: 'База JSON', accept: {'application/json':['.json']} }] });
-      const w = await handle.createWritable(); await w.write(blob); await w.close();
+      const w = await handle.createWritable();
+      await w.write(await blob.arrayBuffer());
+      await w.close();
       showToast('Файл сохранён: ' + filename);
       return;
     } catch(err) { if (err && err.name === 'AbortError') return; }
@@ -1710,7 +1715,10 @@ async function mat_saveViaFolder(){
     try{
       const isJson=mat_pendingSave.filename.endsWith('.json');
       const handle=await showSaveFilePicker({ suggestedName:mat_pendingSave.filename, types:[{ description:isJson?'Данные сметы (JSON)':'Документ PDF', accept:isJson?{'application/json':['.json']}:{'application/pdf':['.pdf']} }] });
-      const w=await handle.createWritable(); await w.write(mat_pendingSave.blob); await w.close();
+      const w=await handle.createWritable();
+      // ИСПРАВЛЕНО: пишем arrayBuffer, а не blob
+      await w.write(await mat_pendingSave.blob.arrayBuffer());
+      await w.close();
       mat_closeSavePicker(); mat_showToast('Файл сохранён в выбранную папку');
     }catch(err){ if(err&&err.name==='AbortError'){mat_closeSavePicker();return;} mat_showToast('Не удалось сохранить в папку: '+err.message); }
   }else{ mat_showToast('Браузер не поддерживает выбор папки.'); }
@@ -1730,7 +1738,9 @@ async function mat_exportDB(){
   if (window.showSaveFilePicker) {
     try {
       const handle = await showSaveFilePicker({ suggestedName: filename, types: [{ description: 'База JSON', accept: {'application/json':['.json']} }] });
-      const w = await handle.createWritable(); await w.write(blob); await w.close();
+      const w = await handle.createWritable();
+      await w.write(await blob.arrayBuffer());
+      await w.close();
       mat_showToast('Файл сохранён: ' + filename);
       return;
     } catch(err) { if (err && err.name === 'AbortError') return; }
@@ -1961,9 +1971,7 @@ if (installBtn) {
   installBtn.addEventListener('click', async () => {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
-    try {
-      await deferredPrompt.userChoice;
-    } catch(e){}
+    try { await deferredPrompt.userChoice; } catch(e){}
     deferredPrompt = null;
     installBtn.classList.remove('show');
   });
@@ -1982,7 +1990,7 @@ window.addEventListener('appinstalled', () => {
   const d = new Date();
   const ds = d.toLocaleDateString('ru-RU', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
   document.getElementById('today').textContent = ds.charAt(0).toUpperCase() + ds.slice(1);
-  const APP_VERSION = '1.81.0';
+  const APP_VERSION = '1.81.1';
   document.getElementById('appVersion').textContent = 'version ' + APP_VERSION;
   const box = document.getElementById('particles');
   const N = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 10;
