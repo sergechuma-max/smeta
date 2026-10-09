@@ -146,30 +146,6 @@
   .status .dot{width:8px;height:8px;border-radius:50%; background:var(--amber); box-shadow:0 0 10px rgba(255,180,60,.9); animation:blink 2.4s infinite;}
   @keyframes blink{50%{opacity:.35; box-shadow:0 0 3px rgba(255,180,60,.4)}}
 
-  .install-btn{
-    display:none;
-    margin-top:14px;
-    padding:11px 22px;
-    background:linear-gradient(160deg,#ffd063,#f59d17);
-    color:#231a05;
-    border:none;
-    border-radius:11px;
-    font-weight:700;
-    font-family:"Rubik",system-ui,sans-serif;
-    cursor:pointer;
-    font-size:13px;
-    letter-spacing:.04em;
-    box-shadow:0 6px 18px rgba(255,170,40,.35), inset 0 1px 0 rgba(255,255,255,.5);
-    transition:transform .15s ease, box-shadow .2s ease;
-    user-select:none; -webkit-user-select:none;
-    touch-action:manipulation;
-  }
-  .install-btn:active{
-    transform:translateY(2px);
-    box-shadow:0 2px 8px rgba(255,170,40,.4), inset 0 1px 0 rgba(255,255,255,.5);
-  }
-  .install-btn.show{ display:inline-block; }
-
   .app-version{
     margin-top:10px;
     font:600 11px/1 "Rubik";
@@ -703,8 +679,7 @@
           </button>
         </div>
         <div class="status"><span class="dot"></span> Готов к работе</div>
-        <button id="installAppBtn" class="install-btn">📲 Установить приложение</button>
-        <div class="app-version" id="appVersion">version 1.81.1</div>
+        <div class="app-version" id="appVersion">version 1.81.2</div>
       </div>
     </section>
 
@@ -895,20 +870,6 @@
               <button class="btn-gray" onclick="closeSelectServiceModal()" style="margin-top: 15px;">✕ Отмена</button>
             </div>
           </div>
-
-          <div class="modal" id="svcSavePickerModal">
-            <div class="modal-content">
-              <h2>💾 Куда сохранить?</h2>
-              <p style="font-size:12px; color:var(--text-gray); margin:-8px 0 15px 0; text-align:center;" id="svcSavePickerHint"></p>
-              <button class="btn-blue" onclick="svc_saveViaFolder()">📁 Выбрать папку на устройстве</button>
-              <button class="btn-gray share-btn" onclick="svc_saveViaShare()">
-                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
-                Через системное меню
-              </button>
-              <button class="btn-green" onclick="svc_saveViaDownload()">⬇ Быстро сохранить в «Загрузки»</button>
-              <button class="btn-gray" onclick="svc_closeSavePicker()">✕ Отмена</button>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -1050,20 +1011,6 @@
               <button class="btn-orange" onclick="mat_sharePDF('client')">📄 Смета (клиент)</button>
               <button class="btn-blue" onclick="mat_sharePDF('list')">📋 Список материалов</button>
               <button class="btn-gray" onclick="mat_closeSendModal()">✕ Отмена</button>
-            </div>
-          </div>
-
-          <div class="modal" id="matSavePickerModal">
-            <div class="modal-content">
-              <h2>💾 Куда сохранить?</h2>
-              <p class="picker-hint" id="matSavePickerHint"></p>
-              <button class="btn-blue" onclick="mat_saveViaFolder()">📁 Выбрать папку на устройстве</button>
-              <button class="btn-send" onclick="mat_saveViaShare()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
-                Через системное меню
-              </button>
-              <button class="btn-green" onclick="mat_saveViaDownload()">⬇ Быстро сохранить в «Загрузки»</button>
-              <button class="btn-gray" onclick="mat_closeSavePicker()">✕ Отмена</button>
             </div>
           </div>
         </div>
@@ -1241,51 +1188,24 @@ function numberToWords(number) {
 function todayStr(){ const d = new Date(); const dd = String(d.getDate()).padStart(2,'0'); const mm = String(d.getMonth()+1).padStart(2,'0'); const yyyy = d.getFullYear(); return `${dd}-${mm}-${yyyy}`; }
 function sanitizeName(s){ return (s || '').replace(/[^a-zа-яё0-9\-_ ]/gi, '').trim(); }
 
-let svc_pendingSave = null;
-function svc_openSavePicker(blob, filename, mimeType){ svc_pendingSave = { blob, filename, mimeType: mimeType || blob.type }; document.getElementById("svcSavePickerHint").textContent = 'Файл: ' + filename; const modal = document.getElementById("svcSavePickerModal"); modal.style.display = "flex"; modal.scrollTop = 0; }
-function svc_closeSavePicker(){ document.getElementById("svcSavePickerModal").style.display = "none"; svc_pendingSave = null; }
-async function svc_saveViaFolder(){
-  if(!svc_pendingSave) return;
-  if(window.showSaveFilePicker){
-    try{
-      const name = svc_pendingSave.filename;
-      const isPdf = name.toLowerCase().endsWith('.pdf'); const isJson = name.toLowerCase().endsWith('.json');
-      const handle = await showSaveFilePicker({ suggestedName: name, types: [{ description: isPdf ? 'PDF документ' : (isJson ? 'Данные сметы (JSON)' : 'Файл'), accept: isPdf ? {'application/pdf':['.pdf']} : (isJson ? {'application/json':['.json']} : {}) }] });
-      const w = await handle.createWritable();
-      // ИСПРАВЛЕНО: пишем arrayBuffer, а не blob — иначе файл может быть битым
-      await w.write(await svc_pendingSave.blob.arrayBuffer());
-      await w.close();
-      svc_closeSavePicker(); showToast('Файл сохранён в выбранную папку');
-    }catch(err){ if(err && err.name === 'AbortError'){ svc_closeSavePicker(); return; } showToast('Не удалось сохранить: ' + err.message); }
-  } else { showToast('Браузер не поддерживает выбор папки. Используй «Быстро сохранить»'); }
+/* ═══ СОХРАНЕНИЕ — ПРЯМАЯ ЗАГРУЗКА В «ЗАГРУЗКИ» ═══ */
+function svc_downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  showToast('Файл сохранён в «Загрузки»');
 }
-async function svc_saveViaShare(){
-  if(!svc_pendingSave) return;
-  const blob = svc_pendingSave.blob; const filename = svc_pendingSave.filename;
-  try{ const file = new File([blob], filename, { type: blob.type }); if(navigator.share){ await navigator.share({ files: [file], title: 'Смета' }); svc_closeSavePicker(); showToast('Отправлено / сохранено'); } else { showToast('Система не поддерживает отправку файлов'); } }
-  catch(err){ if(err && err.name === 'AbortError'){ return; } showToast('Ошибка: ' + err.message); }
-}
-function svc_saveViaDownload(){ if(!svc_pendingSave) return; const url = URL.createObjectURL(svc_pendingSave.blob); const a = document.createElement('a'); a.href = url; a.download = svc_pendingSave.filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url), 1000); svc_closeSavePicker(); showToast('Файл сохранён в «Загрузки»'); }
 
 async function exportDB(){
   const data = { categories: categoriesDB, services: servicesDB, exportDate: new Date().toISOString() };
   const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
   const filename = 'база услуг ' + todayStr() + '.json';
-  if (window.showSaveFilePicker) {
-    try {
-      const handle = await showSaveFilePicker({ suggestedName: filename, types: [{ description: 'База JSON', accept: {'application/json':['.json']} }] });
-      const w = await handle.createWritable();
-      await w.write(await blob.arrayBuffer());
-      await w.close();
-      showToast('Файл сохранён: ' + filename);
-      return;
-    } catch(err) { if (err && err.name === 'AbortError') return; }
-  }
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  setTimeout(()=>URL.revokeObjectURL(url), 1000);
-  showToast('Файл сохранён в «Загрузки»');
+  svc_downloadBlob(blob, filename);
 }
 function importDBTrigger(){ document.getElementById("importFileInput").click(); }
 function handleFileImport(event){
@@ -1454,7 +1374,7 @@ async function saveEstimate(){
   const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
   const cname = sanitizeName(data.customerName);
   const filename = 'смета услуг' + (cname ? ' ' + cname : '') + ' ' + todayStr() + '.json';
-  svc_openSavePicker(blob, filename, 'application/json');
+  svc_downloadBlob(blob, filename);
 }
 function loadEstimateTrigger(){ document.getElementById("importEstimateInput").click(); }
 function handleEstimateImport(event){
@@ -1547,7 +1467,7 @@ async function generatePDF(mode) {
   document.getElementById("closePdfPreview").style.display = "block";
   document.fonts.ready.then(() => { setTimeout(() => {
     const element = document.getElementById("pdfContent");
-    html2pdf().set(getPdfOptions(filename)).from(element).output('blob').then(blob => { closePdfPreview(); svc_openSavePicker(blob, filename, 'application/pdf'); }).catch(err => { console.error(err); showToast('Ошибка при создании PDF'); closePdfPreview(); });
+    html2pdf().set(getPdfOptions(filename)).from(element).output('blob').then(blob => { closePdfPreview(); svc_downloadBlob(blob, filename); }).catch(err => { console.error(err); showToast('Ошибка при создании PDF'); closePdfPreview(); });
   }, 300); });
 }
 function sharePDF() {
@@ -1565,8 +1485,8 @@ function sharePDF() {
     html2pdf().set(getPdfOptions(filename)).from(element).output('blob').then(blob => {
       closePdfPreview();
       const file = new File([blob], filename, { type: 'application/pdf' });
-      if (navigator.share) { navigator.share({ files: [file], title: 'Смета на работы' }).then(() => showToast('Смета отправлена')).catch(err => { if (err && err.name !== 'AbortError') svc_openSavePicker(blob, filename, 'application/pdf'); }); }
-      else { svc_openSavePicker(blob, filename, 'application/pdf'); }
+      if (navigator.share) { navigator.share({ files: [file], title: 'Смета на работы' }).then(() => showToast('Смета отправлена')).catch(err => { if (err && err.name !== 'AbortError') svc_downloadBlob(blob, filename); }); }
+      else { svc_downloadBlob(blob, filename); }
     }).catch(err => { console.error(err); closePdfPreview(); showToast('Ошибка при создании PDF'); });
   }, 300); });
 }
@@ -1602,7 +1522,7 @@ const mat_defaultCategories=[
 {id:mat_getId(),name:"НШВИ 6-12 Duwi (Лемана)",unit:"упак",price:178},{id:mat_getId(),name:"НШВИ 10-14 Duwi (Лемана)",unit:"упак",price:180}]}
 ];
 let mat_categories=[], mat_markup=30, mat_deliveryPrice=0, mat_customerName="", mat_objectAddress="";
-let mat_dbSortableInstances=[], mat_categoriesSortableInstance=null, mat_pickerTargetRow=null, mat_pendingSave=null;
+let mat_dbSortableInstances=[], mat_categoriesSortableInstance=null, mat_pickerTargetRow=null;
 
 function mat_loadData(){
   const oldDb=localStorage.getItem("materials_full"); const newDb=localStorage.getItem("materials_categories");
@@ -1706,47 +1626,19 @@ function mat_saveNewMaterial(){
   cat.materials.push({id:mat_getId(),name:name,unit:unit,price:price});
   mat_saveCategories();mat_closeAddMaterialModal();mat_renderDB();mat_showToast("Материал добавлен в базу");
 }
-function mat_openSavePicker(blob,filename){ mat_pendingSave={blob:blob,filename:filename}; document.getElementById("matSavePickerHint").textContent='Файл: '+filename; const m = document.getElementById("matSavePickerModal"); m.style.display="flex"; m.scrollTop = 0; }
-function mat_closeSavePicker(){ document.getElementById("matSavePickerModal").style.display="none"; mat_pendingSave=null; }
-function mat_downloadBlob(blob,filename){ const url=URL.createObjectURL(blob); const a=document.createElement('a');a.href=url;a.download=filename; document.body.appendChild(a);a.click();document.body.removeChild(a); URL.revokeObjectURL(url); }
-async function mat_saveViaFolder(){
-  if(!mat_pendingSave)return;
-  if(window.showSaveFilePicker){
-    try{
-      const isJson=mat_pendingSave.filename.endsWith('.json');
-      const handle=await showSaveFilePicker({ suggestedName:mat_pendingSave.filename, types:[{ description:isJson?'Данные сметы (JSON)':'Документ PDF', accept:isJson?{'application/json':['.json']}:{'application/pdf':['.pdf']} }] });
-      const w=await handle.createWritable();
-      // ИСПРАВЛЕНО: пишем arrayBuffer, а не blob
-      await w.write(await mat_pendingSave.blob.arrayBuffer());
-      await w.close();
-      mat_closeSavePicker(); mat_showToast('Файл сохранён в выбранную папку');
-    }catch(err){ if(err&&err.name==='AbortError'){mat_closeSavePicker();return;} mat_showToast('Не удалось сохранить в папку: '+err.message); }
-  }else{ mat_showToast('Браузер не поддерживает выбор папки.'); }
-}
-async function mat_saveViaShare(){
-  if(!mat_pendingSave)return;
-  const blob=mat_pendingSave.blob,filename=mat_pendingSave.filename;
-  try{ const file=new File([blob],filename,{type:blob.type}); if(navigator.share){ await navigator.share({files:[file],title:'Смета материалов'}); mat_closeSavePicker(); mat_showToast('Отправлено / сохранено'); }else{ mat_showToast('Система не поддерживает отправку файлов'); } }
-  catch(err){ if(err&&err.name==='AbortError'){mat_showToast('Отменено');return;} mat_showToast('Ошибка: '+err.message); }
-}
-function mat_saveViaDownload(){ if(!mat_pendingSave)return; mat_downloadBlob(mat_pendingSave.blob,mat_pendingSave.filename); mat_closeSavePicker(); mat_showToast('Файл сохранён в «Загрузки»'); }
 
-async function mat_exportDB(){
+/* ═══ СОХРАНЕНИЕ МАТЕРИАЛОВ — ПРЯМАЯ ЗАГРУЗКА ═══ */
+function mat_downloadBlob(blob,filename){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=filename;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  mat_showToast('Файл сохранён в «Загрузки»');
+}
+function mat_exportDB(){
   const data={version:2,categories:mat_categories,markup:mat_markup,deliveryPrice:mat_deliveryPrice,customerName:mat_customerName,objectAddress:mat_objectAddress,exportDate:new Date().toISOString()};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const filename='база материалов ' + todayStr() + '.json';
-  if (window.showSaveFilePicker) {
-    try {
-      const handle = await showSaveFilePicker({ suggestedName: filename, types: [{ description: 'База JSON', accept: {'application/json':['.json']} }] });
-      const w = await handle.createWritable();
-      await w.write(await blob.arrayBuffer());
-      await w.close();
-      mat_showToast('Файл сохранён: ' + filename);
-      return;
-    } catch(err) { if (err && err.name === 'AbortError') return; }
-  }
-  mat_downloadBlob(blob, filename);
-  mat_showToast('Файл сохранён в «Загрузки»');
+  mat_downloadBlob(blob,'база материалов ' + todayStr() + '.json');
 }
 function mat_importDBTrigger(){document.getElementById("matImportFileInput").click();}
 function mat_handleFileImport(event){
@@ -1838,7 +1730,7 @@ function mat_saveEstimate(){
   const cname = sanitizeName(mat_customerName);
   const markStr = (mat_markup !== '' && mat_markup !== null && !isNaN(Number(mat_markup))) ? (Number(mat_markup) + '%') : '';
   const filename = 'смета материалов' + (cname ? ' ' + cname : '') + (markStr ? ' ' + markStr : '') + ' ' + todayStr() + '.json';
-  mat_openSavePicker(blob, filename);
+  mat_downloadBlob(blob, filename);
 }
 function mat_loadEstimateTrigger(){document.getElementById("matImportEstimateInput").click();}
 function mat_handleEstimateImport(event){
@@ -1919,7 +1811,7 @@ async function mat_generatePDF(mode, filename){
   document.getElementById("matPdfContainer").style.display="block";
   document.getElementById("matClosePdfPreview").style.display="block";
   document.fonts.ready.then(()=>{ setTimeout(()=>{ const element=document.getElementById("matPdfContent");
-    html2pdf().set(mat_getPdfOptions(filename)).from(element).output('blob').then(blob=>{ mat_closePdfPreview(); mat_openSavePicker(blob, filename); }).catch(err=>{ console.error(err); mat_showToast('Ошибка PDF'); mat_closePdfPreview(); });
+    html2pdf().set(mat_getPdfOptions(filename)).from(element).output('blob').then(blob=>{ mat_closePdfPreview(); mat_downloadBlob(blob, filename); }).catch(err=>{ console.error(err); mat_showToast('Ошибка PDF'); mat_closePdfPreview(); });
   },300); });
 }
 function mat_savePDFClient(){ const cname = sanitizeName(mat_customerName); mat_generatePDF('client','смета материалов' + (cname ? ' ' + cname : '') + ' ' + todayStr() + '.pdf'); }
@@ -1940,8 +1832,8 @@ async function mat_sharePDF(mode){
       mat_closePdfPreview();
       try{ const file=new File([blob],filename,{type:'application/pdf'});
         if(navigator.share){ await navigator.share({files:[file],title:'Смета материалов'}); mat_showToast('Отправлено'); }
-        else{ mat_downloadBlob(blob,filename); mat_showToast('Файл сохранён в загрузки'); }
-      }catch(err){ if(err&&err.name==='AbortError'){mat_showToast('Отправка отменена');} else{mat_downloadBlob(blob,filename);mat_showToast('Файл сохранён');} }
+        else{ mat_downloadBlob(blob,filename); }
+      }catch(err){ if(err&&err.name==='AbortError'){mat_showToast('Отправка отменена');} else{mat_downloadBlob(blob,filename);} }
     }).catch(err=>{ console.error(err); mat_showToast('Ошибка PDF'); mat_closePdfPreview(); });
   },300); });
 }
@@ -1949,7 +1841,7 @@ window.addEventListener('load', mat_loadData);
 </script>
 
 <script>
-/* ═══════════ PWA: SERVICE WORKER + УСТАНОВКА ═══════════ */
+/* ═══════════ PWA: SERVICE WORKER ═══════════ */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('service-worker.js')
@@ -1957,31 +1849,6 @@ if ('serviceWorker' in navigator) {
       .catch(err => console.warn('SW ошибка:', err));
   });
 }
-
-let deferredPrompt = null;
-const installBtn = document.getElementById('installAppBtn');
-
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  if (installBtn) installBtn.classList.add('show');
-});
-
-if (installBtn) {
-  installBtn.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    try { await deferredPrompt.userChoice; } catch(e){}
-    deferredPrompt = null;
-    installBtn.classList.remove('show');
-  });
-}
-
-window.addEventListener('appinstalled', () => {
-  deferredPrompt = null;
-  if (installBtn) installBtn.classList.remove('show');
-  console.log('Приложение установлено');
-});
 </script>
 
 <script>
@@ -1990,7 +1857,7 @@ window.addEventListener('appinstalled', () => {
   const d = new Date();
   const ds = d.toLocaleDateString('ru-RU', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
   document.getElementById('today').textContent = ds.charAt(0).toUpperCase() + ds.slice(1);
-  const APP_VERSION = '1.81.1';
+  const APP_VERSION = '1.81.2';
   document.getElementById('appVersion').textContent = 'version ' + APP_VERSION;
   const box = document.getElementById('particles');
   const N = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 10;
