@@ -1,0 +1,2015 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
+<meta name="theme-color" content="#121419">
+<meta name="format-detection" content="telephone=no">
+<title>Штробление — Электромонтаж</title>
+<meta name="application-name" content="Штробление">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Смета">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='42' fill='%23ffb52e'/%3E%3Cpath d='M108 32 64 108h34l-6 52 44-76h-34l6-52z' fill='%23231a05'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Rubik:wght@400;500;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<style>
+  :root{
+    --bg-base:#121419; --line:#343a45; --text:#eceef2; --muted:#9aa1ad;
+    --amber:#ffb52e; --amber-soft:#ffd479;
+    --radius:16px;
+    --glow: 0 0 0 2px rgba(255,214,130,.95), 0 0 18px rgba(255,190,80,.55),
+            0 0 42px rgba(255,150,40,.35), inset 0 0 22px rgba(255,190,80,.16);
+    --glow-soft: 0 0 0 2px rgba(255,214,130,.32), 0 0 6px rgba(255,190,80,.18),
+                 0 0 14px rgba(255,150,40,.12), inset 0 0 7px rgba(255,190,80,.05);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:"Rubik",system-ui,sans-serif; background:var(--bg-base); color:var(--text);
+    min-height:100vh; display:flex; flex-direction:column; overflow-x:hidden;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  .bg{
+    position:fixed;
+    top:0; left:0;
+    width:100vw;
+    height:100vh;
+    z-index:0;
+    overflow:hidden;
+    pointer-events:none;
+    background-color:#121419;
+    background-image:url("https://abrakadabra.fun/uploads/posts/2022-03/1646791751_8-abrakadabra-fun-p-cherno-oranzhevie-oboi-na-telefon-12.jpg");
+    background-repeat:no-repeat;
+    background-position:center center;
+  }
+  .bg::after{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(9,10,13,.66) 0%, rgba(9,10,13,.14) 24%, rgba(9,10,13,.16) 58%, rgba(8,9,12,.72) 100%);
+    pointer-events:none;
+  }
+
+  body.no-bg .bg{ display:none; }
+  body.no-bg{ background:#121419; }
+
+  #particles{position:absolute; inset:0; z-index:1}
+  #particles span{
+    position:absolute; bottom:-12px; border-radius:50%;
+    background:radial-gradient(circle, rgba(255,205,110,.95), rgba(255,160,40,0));
+    animation:rise var(--dur) linear var(--delay) infinite; opacity:0;
+  }
+  @keyframes rise{
+    0%{transform:translate(0,0); opacity:0}
+    8%{opacity:var(--op)} 90%{opacity:var(--op)}
+    100%{transform:translate(var(--dx),-104vh); opacity:0}
+  }
+
+  .topbar{position:relative; z-index:5; display:flex; justify-content:space-between; align-items:center; gap:12px;
+    padding:calc(12px + env(safe-area-inset-top)) 20px 10px;}
+  .brand{display:flex; gap:10px; align-items:center; font:600 11.5px/1 "Rubik"; letter-spacing:.22em; color:var(--muted); text-transform:uppercase;}
+  .brand .bolt{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;color:#231a05;
+    background:linear-gradient(160deg,#ffd063,#f59d17);
+    box-shadow:0 4px 14px rgba(255,170,40,.35), inset 0 1px 0 rgba(255,255,255,.5);}
+  .date{font:500 12px "Rubik"; color:var(--muted); letter-spacing:.04em; text-transform:capitalize;}
+  main{position:relative; z-index:2; flex:1; display:flex; flex-direction:column;}
+  .screen{display:none; flex:1; flex-direction:column;}
+  .screen.active{display:flex;}
+
+  #screen-home{
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+    max-height:100vh;
+    overflow:hidden;
+    padding:0 20px calc(12px + env(safe-area-inset-bottom));
+    animation:fadeScreen .5s ease both;
+  }
+  @keyframes fadeScreen{from{opacity:0}}
+
+  .home-inner{
+    width:100%; max-width:640px;
+    display:flex; flex-direction:column; align-items:center;
+    justify-content:center;
+    max-height:100%;
+  }
+
+  .hero-bolt{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;color:#241a04;
+    background:linear-gradient(160deg,#ffd873,#f0920e);
+    box-shadow:0 10px 30px rgba(255,166,30,.35), inset 0 2px 2px rgba(255,255,255,.55), inset 0 -6px 12px rgba(160,80,0,.35);
+    animation:heroPulse 4.5s ease-in-out infinite;}
+  @keyframes heroPulse{50%{box-shadow:0 10px 44px rgba(255,166,30,.65), inset 0 2px 2px rgba(255,255,255,.55), inset 0 -6px 12px rgba(160,80,0,.35)}}
+
+  .eyebrow{margin-top:16px; font:600 10px "Rubik"; letter-spacing:.3em; text-transform:uppercase; color:#d8a765; text-shadow:0 1px 8px rgba(0,0,0,.8); text-align:center;}
+  .home-title{font-family:"Russo One"; font-weight:400; font-size:clamp(2rem,6.5vw,3rem); margin:6px 0 4px; letter-spacing:.01em; text-shadow:0 2px 24px rgba(0,0,0,.75); text-align:center;}
+  .home-title svg{width:.55em;height:.55em; color:var(--amber); filter:drop-shadow(0 0 10px rgba(255,175,50,.6)); vertical-align:baseline;}
+  .home-sub{color:var(--muted); font-size:.9rem; text-align:center; max-width:40ch; margin-bottom:22px; text-shadow:0 1px 10px rgba(0,0,0,.8);}
+
+  .btn-stack{display:flex; flex-direction:column; gap:14px; width:100%;}
+  .big-btn{
+    position:relative; display:flex; align-items:center; gap:16px; padding:14px 16px; min-height:82px;
+    text-align:left; cursor:pointer; font-family:"Rubik"; color:var(--text); border-radius:var(--radius);
+    background:linear-gradient(180deg,#23272e 0%,#16181d 60%,#121419 100%);
+    border:1px solid #3d434e; border-top-color:#4a5260;
+    box-shadow:0 12px 26px rgba(0,0,0,.55), 0 2px 0 rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.07);
+    transition:transform .16s ease, box-shadow .22s ease, border-color .22s ease;
+    touch-action:manipulation; user-select:none; -webkit-user-select:none;
+  }
+  .big-btn .tile{flex:0 0 48px; height:48px; border-radius:12px; display:grid; place-items:center; color:#251b04;
+    background:linear-gradient(160deg,#ffd063,#f1960f);
+    box-shadow:inset 0 2px 2px rgba(255,255,255,.5), inset 0 -5px 10px rgba(150,75,0,.4), 0 6px 16px rgba(255,160,30,.25);
+    transition:transform .2s ease, box-shadow .25s ease;}
+  .labels{display:flex; flex-direction:column; gap:4px; min-width:0;}
+  .l1{font-family:"Russo One"; font-size:1rem; letter-spacing:.05em; text-transform:uppercase; color:#f2f3f6; transition:color .2s;}
+  .l2{font-size:.78rem; color:var(--muted);}
+  .chev{margin-left:auto; color:#5b6370; transition:transform .25s ease, color .25s ease;}
+  .big-btn:hover{transform:translateY(-2px); border-color:#6a5a34;
+    box-shadow:0 18px 34px rgba(0,0,0,.6), 0 0 22px rgba(255,175,50,.18), inset 0 1px 0 rgba(255,255,255,.08);}
+  .big-btn:hover .chev{transform:translateX(4px); color:var(--amber);}
+  .big-btn:active{transform:translateY(2px);}
+  .big-btn.is-pressed{transform:translateY(3px); border-color:#ffc862;
+    box-shadow:var(--glow), 0 5px 14px rgba(0,0,0,.5);}
+  .big-btn.is-pressed .tile{transform:scale(1.1); box-shadow:inset 0 2px 2px rgba(255,255,255,.5), 0 0 26px rgba(255,185,60,.7);}
+  .big-btn.is-pressed .l1{color:#ffe0a1;}
+  .big-btn:focus-visible{outline:2px solid var(--amber); outline-offset:3px;}
+  .pulse-ring{position:absolute; inset:-2px; border-radius:inherit; border:2px solid rgba(255,214,130,.9);
+    pointer-events:none; animation:ringOut .6s ease-out forwards;}
+  @keyframes ringOut{to{transform:scale(1.16); opacity:0}}
+
+  .status{margin-top:20px; display:flex; align-items:center; gap:9px; font-size:.75rem; color:var(--muted); letter-spacing:.06em; text-shadow:0 1px 8px rgba(0,0,0,.8);}
+  .status .dot{width:8px;height:8px;border-radius:50%; background:var(--amber); box-shadow:0 0 10px rgba(255,180,60,.9); animation:blink 2.4s infinite;}
+  @keyframes blink{50%{opacity:.35; box-shadow:0 0 3px rgba(255,180,60,.4)}}
+
+  .install-btn{
+    display:none;
+    margin-top:14px;
+    padding:11px 22px;
+    background:linear-gradient(160deg,#ffd063,#f59d17);
+    color:#231a05;
+    border:none;
+    border-radius:11px;
+    font-weight:700;
+    font-family:"Rubik",system-ui,sans-serif;
+    cursor:pointer;
+    font-size:13px;
+    letter-spacing:.04em;
+    box-shadow:0 6px 18px rgba(255,170,40,.35), inset 0 1px 0 rgba(255,255,255,.5);
+    transition:transform .15s ease, box-shadow .2s ease;
+    user-select:none; -webkit-user-select:none;
+    touch-action:manipulation;
+  }
+  .install-btn:active{
+    transform:translateY(2px);
+    box-shadow:0 2px 8px rgba(255,170,40,.4), inset 0 1px 0 rgba(255,255,255,.5);
+  }
+  .install-btn.show{ display:inline-block; }
+
+  .app-version{
+    margin-top:10px;
+    font:600 11px/1 "Rubik";
+    letter-spacing:.18em;
+    text-transform:lowercase;
+    color:var(--amber);
+    text-shadow: 0 0 8px rgba(255,181,46,.85), 0 0 18px rgba(255,181,46,.45);
+    animation: verGlow 3.6s ease-in-out infinite;
+  }
+  @keyframes verGlow{
+    50%{ text-shadow: 0 0 12px rgba(255,181,46,1), 0 0 26px rgba(255,181,46,.55); }
+  }
+
+  .app-screen{padding:0 0 28px;}
+  .app-screen.active{animation:screenIn .45s cubic-bezier(.2,.8,.25,1) both;}
+  @keyframes screenIn{from{opacity:0; transform:translateY(14px)}}
+  .app-topbar{display:flex; align-items:center; gap:14px; padding:14px 22px; margin:6px 16px 18px;
+    border:1px solid var(--line); border-radius:14px; background:rgba(20,22,28,.82); backdrop-filter:blur(6px);}
+  .back-btn{display:inline-flex; align-items:center; gap:8px; font:600 .82rem "Rubik"; letter-spacing:.05em;
+    color:var(--text); background:#232833; border:1px solid #3c4350; border-radius:10px; padding:9px 14px; cursor:pointer; transition:.18s;}
+  .back-btn:hover{border-color:var(--amber); color:var(--amber-soft); box-shadow:0 0 14px rgba(255,175,50,.18); transform:translateX(-2px);}
+  .app-title{font-family:"Russo One"; font-size:1rem; letter-spacing:.05em; text-transform:uppercase;}
+  .app-body{flex:1; width:100%; max-width:1100px; margin:0 auto; padding:0 16px; display:flex;}
+
+  @media(min-width:720px){
+    .btn-stack{display:grid; grid-template-columns:1fr 1fr; gap:20px; max-width:800px;}
+    .home-inner{max-width:840px;}
+  }
+  @media(max-height:640px){
+    .hero-bolt{width:48px;height:48px;}
+    .eyebrow{margin-top:10px; font-size:9px;}
+    .home-title{font-size:1.6rem; margin:4px 0 2px;}
+    .home-sub{font-size:.8rem; margin-bottom:14px;}
+    .big-btn{min-height:72px; padding:10px 14px;}
+    .big-btn .tile{flex:0 0 42px; height:42px;}
+    .l1{font-size:.9rem;}
+    .l2{font-size:.72rem;}
+    .status{margin-top:12px; font-size:.7rem;}
+    .app-version{margin-top:6px; font-size:10px;}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important; transition:none!important;}
+    #particles{display:none;}
+  }
+
+  .svc-app, .mat-app{
+    background:rgba(13,15,19,.55);
+    border:1px solid rgba(255,255,255,.07);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    box-shadow:0 12px 40px rgba(0,0,0,.45);
+  }
+  .svc-app button, .mat-app button{
+    background:linear-gradient(180deg,#262b34 0%,#1a1d24 60%,#14171d 100%);
+    border:1px solid #3d434e; border-top-color:#4a5260;
+    color:#eceef2;
+    box-shadow:0 8px 18px rgba(0,0,0,.45), 0 2px 0 rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.07);
+    transition:transform .15s ease, box-shadow .2s ease, border-color .2s ease, color .2s ease;
+  }
+  .svc-app button:hover, .mat-app button:hover{
+    border-color:#6a5a34;
+    box-shadow:0 10px 22px rgba(0,0,0,.5), 0 0 12px rgba(255,175,50,.12), inset 0 1px 0 rgba(255,255,255,.08);
+  }
+  .svc-app button:active, .mat-app button:active{
+    transform:translateY(2px); border-color:#ffc862; color:#ffe0a1;
+    box-shadow:var(--glow-soft), 0 4px 10px rgba(0,0,0,.4); opacity:1;
+  }
+  .svc-app button.remove, .mat-app button.remove{
+    background:rgba(220,38,38,.16); border:1px solid rgba(220,38,38,.4); color:#ff9b9b; box-shadow:none;
+  }
+  .svc-app button.remove:active, .mat-app button.remove:active{
+    border-color:#ff8080; color:#ffc4c4; box-shadow:0 0 0 2px rgba(255,120,120,.25); transform:translateY(1px);
+  }
+  .svc-app select option, .svc-app select optgroup,
+  .mat-app select option, .mat-app select optgroup{ background:#fff; color:#2D3748; }
+
+  .svc-app{
+    --primary:#6aa6ff; --primary-hover:#9cc4ff; --primary-light:rgba(106,166,255,.16);
+    --card-gray:rgba(255,255,255,.05); --text-dark:#eceef2; --text-gray:#9aa1ad;
+    --border-gray:rgba(255,255,255,.14); --header-gray:#2b313c; --shadow:0 4px 10px rgba(0,0,0,.35);
+    --safe-area-top:env(safe-area-inset-top,0px); --safe-area-bottom:env(safe-area-inset-bottom,0px);
+    --max-width:1024px;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+    margin:0 auto;
+    padding:calc(10px + var(--safe-area-top)) 10px calc(20px + var(--safe-area-bottom)) 10px;
+    color:var(--text-dark); line-height:1.6;
+    width:100%; max-width:100%; overflow-x:hidden; -webkit-text-size-adjust:100%;
+    border-radius:16px;
+  }
+  .svc-app, .svc-app *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
+  .svc-app input, .svc-app select, .svc-app textarea{ user-select:text; -webkit-user-select:text; }
+  .svc-app h1{ text-align:center; font-size:20px; color:var(--text-dark); margin:0 0 12px 0; font-weight:700; }
+  .svc-app h2{ color:var(--text-dark); font-size:18px; margin-bottom:15px; }
+  .svc-app h3{ color:var(--text-gray); font-size:14px; margin-top:15px; margin-bottom:10px; }
+  .svc-app button{
+    width:100%; padding:14px; margin:6px 0; font-size:15px; font-weight:600;
+    border-radius:10px; cursor:pointer; touch-action:manipulation; text-align:center;
+  }
+  .svc-app button.share-btn{ display:flex; align-items:center; justify-content:center; gap:8px; }
+  .svc-app button.share-btn svg{ flex-shrink:0; width:18px; height:18px; }
+  .svc-app button.remove{
+    font-size:18px; border-radius:6px; padding:4px 10px; min-width:36px; max-width:40px; font-weight:bold; margin:0;
+  }
+  .svc-app .screen-only{
+    background:var(--card-gray); padding:15px; border-radius:12px;
+    box-shadow:var(--shadow); margin-bottom:12px; width:100%;
+  }
+  .svc-app .main-divider{ border:none; border-top:2px solid var(--border-gray); margin:12px 0; }
+  .svc-app .button-group-row{ display:flex; gap:8px; margin:6px 0; }
+  .svc-app .button-group-row button{ flex:1; margin:0; padding:14px 8px; }
+  .svc-app .table-container{ overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:10px; border-radius:8px; background:rgba(255,255,255,.03); }
+  .svc-app table{ width:100%; border-collapse:collapse; background:var(--card-gray); min-width:600px; }
+  .svc-app th, .svc-app td{ border:1px solid var(--border-gray); padding:8px 4px; text-align:center; font-size:13px; white-space:nowrap; }
+  .svc-app th{ background:var(--header-gray); color:#fff; font-weight:600; text-transform:uppercase; font-size:11px; padding:10px 4px; }
+  .svc-app #mainTable th:nth-child(3), .svc-app #mainTable td:nth-child(3){ min-width:180px; text-align:left; }
+  .svc-app .num-col{ font-weight:700; color:var(--text-gray); background:rgba(255,255,255,.06) !important; min-width:30px; }
+  .svc-app .drag-handle{ cursor:grab; color:var(--text-gray); font-size:18px; font-weight:bold; user-select:none; padding:4px; background:rgba(255,255,255,.06) !important; }
+  .svc-app .sortable-ghost{ opacity:0.4; background:var(--primary-light) !important; }
+  .svc-app .sortable-chosen{ background:rgba(255,255,255,.10) !important; box-shadow:0 4px 12px rgba(0,0,0,0.3); }
+  .svc-app input, .svc-app select{
+    width:100%; box-sizing:border-box; padding:10px; font-size:14px; color:#eceef2;
+    border:2px solid var(--border-gray); border-radius:8px; background:rgba(255,255,255,.07); margin-bottom:8px;
+  }
+  .svc-app input::placeholder{ color:#7d8592; }
+  .svc-app input:focus, .svc-app select:focus{ outline:none; border-color:var(--primary); }
+  .svc-app input[type="number"]{ min-width:60px; max-width:80px; font-weight:600; text-align:center; }
+  .svc-app input[type="number"]::-webkit-outer-spin-button,
+  .svc-app input[type="number"]::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+  .svc-app input[type="number"]{ -moz-appearance:textfield; }
+  .svc-app .markup-row{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  .svc-app .markup-btn{
+    width:54px !important; min-width:54px !important; max-width:54px !important;
+    height:44px; padding:0 !important; margin:0 !important;
+    font-size:20px; font-weight:bold; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .svc-app .markup-row input{
+    flex:1; text-align:center; margin:0 !important;
+    font-size:18px; font-weight:bold; padding:10px !important;
+    min-width:0 !important; max-width:none !important;
+  }
+  .svc-app .total{
+    font-weight:bold; margin-top:10px; font-size:18px; text-align:right;
+    padding:15px; background:var(--card-gray); border-radius:10px; box-shadow:var(--shadow);
+  }
+  .svc-app .total span{ color:#ffb52e; font-size:22px; margin-left:8px; }
+
+  .svc-app .modal, .mat-app .modal{
+    position:fixed; inset:0; background:rgba(10,12,16,0.75);
+    display:none; align-items:flex-start; justify-content:center;
+    z-index:1000;
+    backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+    padding:calc(20px + env(safe-area-inset-top)) 10px 20px;
+    overflow-y:auto; -webkit-overflow-scrolling:touch;
+  }
+  .svc-app .modal-content, .mat-app .modal-content{
+    background:rgba(23,26,33,.97); padding:20px; width:100%; max-width:500px;
+    max-height:calc(100vh - 40px - env(safe-area-inset-top));
+    overflow:auto; border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,0.6);
+    border:1px solid rgba(255,255,255,.08);
+    margin-top:0;
+  }
+
+  .svc-app .db-modal-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:5px; }
+  .svc-app .db-modal-header h2{ margin:0; font-size:18px; }
+  .svc-app .db-total-count{ font-size:10px; color:var(--text-gray); font-weight:400; white-space:nowrap; letter-spacing:0.2px; }
+  .svc-app .settings-divider{ border:none; border-top:2px solid var(--border-gray); margin:20px 0 15px 0; }
+  .svc-app .category-spoiler{ margin-bottom:10px; border:2px solid var(--border-gray); border-radius:10px; overflow:hidden; background:rgba(255,255,255,.03); }
+  .svc-app .category-header{ display:flex; align-items:center; padding:12px 15px; background:linear-gradient(135deg, rgba(255,255,255,.06) 0%, rgba(255,255,255,.02) 100%); user-select:none; border-bottom:1px solid transparent; }
+  .svc-app .category-spoiler.open .category-header{ background:var(--primary-light); border-bottom:1px solid var(--border-gray); }
+  .svc-app .category-drag-handle{ cursor:grab; color:var(--text-gray); font-size:16px; font-weight:bold; user-select:none; padding:4px 8px 4px 0; touch-action:none; flex-shrink:0; }
+  .svc-app .category-drag-handle:active{ cursor:grabbing; color:var(--primary); }
+  .svc-app .category-arrow{ font-size:12px; color:var(--primary); margin-right:10px; font-weight:bold; width:15px; flex-shrink:0; }
+  .svc-app .category-name{ flex:1; font-size:15px; font-weight:600; color:var(--primary); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; cursor:pointer; }
+  .svc-app .category-count{ font-size:12px; color:var(--text-gray); background:rgba(255,255,255,.1); padding:2px 8px; border-radius:10px; margin-left:8px; flex-shrink:0; }
+  .svc-app .category-delete-btn{ background:rgba(220,38,38,.18); color:#ff9b9b; border:none; font-size:14px; font-weight:bold; width:28px; height:28px; border-radius:6px; margin-left:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; padding:0; box-shadow:none; }
+  .svc-app .category-content{ display:none; padding:10px; background:transparent; }
+  .svc-app .category-spoiler.open .category-content{ display:block; }
+  .svc-app .db-cat-table{ width:100%; border-collapse:collapse; background:var(--card-gray); table-layout:fixed; min-width:400px; }
+  .svc-app .db-cat-table th, .svc-app .db-cat-table td{ border:1px solid var(--border-gray); padding:6px 3px; text-align:center; font-size:12px; vertical-align:middle; }
+  .svc-app .db-cat-table th{ background:var(--header-gray); color:#fff; font-size:10px; font-weight:600; text-transform:uppercase; padding:8px 3px; }
+  .svc-app .db-cat-table .db-num{ width:5%; }
+  .svc-app .db-cat-table .db-drag{ width:5%; }
+  .svc-app .db-cat-table .db-name{ width:47%; text-align:left; }
+  .svc-app .db-cat-table .db-unit{ width:12%; }
+  .svc-app .db-cat-table .db-price{ width:21%; }
+  .svc-app .db-cat-table .db-del{ width:10%; }
+  .svc-app .db-cat-table td.db-name{ white-space:normal; word-wrap:break-word; overflow-wrap:break-word; line-height:1.3; }
+  .svc-app .db-cat-table td.db-name input{ font-size:12px; padding:6px 4px; }
+  .svc-app .db-cat-table td.db-unit input, .svc-app .db-cat-table td.db-price input{ width:100% !important; max-width:100% !important; min-width:0 !important; font-size:12px; padding:6px 4px; text-align:center; }
+  .svc-app .db-cat-table .db-drag{ cursor:grab; color:var(--text-gray); font-size:16px; font-weight:bold; user-select:none; background:rgba(255,255,255,.06) !important; touch-action:none; }
+  .svc-app .db-cat-table .db-num{ font-weight:700; color:var(--text-gray); background:rgba(255,255,255,.06) !important; }
+  .svc-app .category-spoiler.drag-over{ border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-light); }
+  .svc-app .service-card{ display:flex; align-items:center; padding:12px 14px; margin-bottom:8px; background:rgba(255,255,255,.05); border:2px solid var(--border-gray); border-radius:10px; cursor:pointer; user-select:none; }
+  .svc-app .service-card:active{ transform:scale(0.98); background:var(--primary-light); border-color:var(--primary); }
+  .svc-app .service-card-info{ flex:1; min-width:0; }
+  .svc-app .service-card-name{ font-size:14px; font-weight:600; color:var(--text-dark); margin-bottom:3px; word-wrap:break-word; line-height:1.3; }
+  .svc-app .service-card-meta{ font-size:11px; color:var(--text-gray); }
+  .svc-app .service-card-price{ font-size:15px; font-weight:700; color:var(--primary); margin-left:10px; white-space:nowrap; flex-shrink:0; }
+  .svc-app .service-card-plus{ width:32px; height:32px; background:var(--primary); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:bold; margin-left:10px; flex-shrink:0; }
+  .svc-app #toast{
+    position:fixed; left:50%; bottom:20%;
+    transform:translate(-50%, 30px);
+    opacity:0; visibility:hidden; pointer-events:none;
+    background:#2D3748; color:#fff; padding:12px 20px; border-radius:8px;
+    font-size:14px; z-index:10001;
+    transition: transform .25s ease, opacity .25s ease, visibility 0s linear .25s;
+    box-shadow:0 4px 20px rgba(0,0,0,0.5); text-align:center; max-width:90%;
+  }
+  .svc-app #toast.show{
+    transform:translate(-50%, 0); opacity:1; visibility:visible; pointer-events:auto;
+    transition: transform .25s ease, opacity .25s ease, visibility 0s;
+  }
+  .svc-app .small{ font-size:11px; color:var(--text-gray); margin-top:-4px; margin-bottom:8px; display:block; }
+  .svc-app label{ display:block; font-size:13px; font-weight:600; color:var(--text-dark); margin-top:12px; margin-bottom:4px; }
+
+  @media (min-width:1025px){
+    .svc-app{ max-width:var(--max-width); margin:0 auto; padding:20px 30px; box-shadow:0 0 40px rgba(0,0,0,.35); }
+    .svc-app .screen-only{ padding:20px; }
+    .svc-app h1{ font-size:24px; margin-bottom:16px; }
+    .svc-app button{ padding:16px; font-size:16px; }
+    .svc-app .button-group-row{ gap:12px; margin:10px 0; }
+    .svc-app .button-group-row button{ padding:16px 12px; font-size:16px; }
+    .svc-app .modal-content{ max-width:700px; padding:25px; }
+    .svc-app .total{ font-size:20px; padding:18px; }
+    .svc-app .total span{ font-size:26px; }
+  }
+  @media (max-width:1024px) and (orientation:landscape) and (max-height:500px){
+    .svc-app{ max-width:100%; padding:8px 15px; }
+    .svc-app h1{ font-size:18px; margin-bottom:8px; }
+    .svc-app .screen-only{ padding:10px; margin-bottom:8px; }
+    .svc-app button{ padding:10px; font-size:14px; margin:4px 0; }
+    .svc-app .button-group-row button{ padding:10px 6px; font-size:13px; }
+    .svc-app .total{ font-size:16px; padding:10px; margin-top:6px; }
+    .svc-app .total span{ font-size:18px; }
+    .svc-app table{ font-size:12px; }
+    .svc-app th, .svc-app td{ padding:6px 3px; font-size:12px; }
+    .svc-app .modal-content{ max-height:95%; padding:15px; }
+  }
+  @media (max-width:600px){
+    .svc-app{ max-width:100%; padding:calc(8px + var(--safe-area-top)) 8px calc(15px + var(--safe-area-bottom)) 8px; }
+    .svc-app h1{ font-size:18px; }
+    .svc-app .screen-only{ padding:12px; }
+    .svc-app .modal-content{ padding:15px; max-width:100%; }
+  }
+  @media (max-width:360px){
+    .svc-app{ padding:calc(5px + var(--safe-area-top)) 5px calc(10px + var(--safe-area-bottom)) 5px; }
+    .svc-app h1{ font-size:16px; }
+    .svc-app button{ padding:12px; font-size:14px; }
+    .svc-app .screen-only{ padding:10px; }
+    .svc-app .category-header{ padding:10px 12px; }
+    .svc-app .category-name{ font-size:14px; }
+  }
+  @media (min-width:601px) and (max-width:1024px){
+    .svc-app{ max-width:100%; padding:15px 20px; }
+    .svc-app .screen-only{ padding:18px; }
+    .svc-app .modal-content{ max-width:600px; }
+    .svc-app h1{ font-size:22px; }
+  }
+  @media (min-width:1400px){ .svc-app{ max-width:var(--max-width); padding:25px 40px; } }
+
+  .mat-app{
+    --primary:#ff8b5e; --primary-hover:#ffab86; --primary-light:rgba(255,139,94,.16);
+    --card-gray:rgba(255,255,255,.05); --text-dark:#eceef2; --text-gray:#9aa1ad;
+    --border-gray:rgba(255,255,255,.14); --header-gray:#2b313c; --shadow:0 4px 10px rgba(0,0,0,.35);
+    --safe-area-top:env(safe-area-inset-top,0px); --safe-area-bottom:env(safe-area-inset-bottom,0px);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    margin:0 auto;
+    padding:calc(10px + var(--safe-area-top)) 10px calc(20px + var(--safe-area-bottom)) 10px;
+    color:var(--text-dark); line-height:1.6;
+    width:100%; max-width:100%; overflow-x:hidden;
+    border-radius:16px;
+  }
+  .mat-app, .mat-app *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
+  .mat-app input, .mat-app select, .mat-app textarea{ user-select:text; -webkit-user-select:text; }
+  .mat-app h1{ text-align:center; font-size:20px; color:var(--text-dark); margin:0 0 12px 0; font-weight:700; }
+  .mat-app h2{ color:var(--text-dark); font-size:18px; margin-bottom:15px; }
+  .mat-app h3{ color:var(--text-gray); font-size:14px; margin-top:15px; margin-bottom:10px; }
+  .mat-app .section-title{ font-size:13px; font-weight:700; color:var(--text-gray); text-transform:uppercase; letter-spacing:.5px; margin:4px 0 8px 0; text-align:center; }
+  .mat-app button{ width:100%; padding:14px; margin:6px 0; font-size:15px; font-weight:600; border-radius:10px; cursor:pointer; touch-action:manipulation; text-align:center; }
+  .mat-app button.share-btn{ display:flex; align-items:center; justify-content:center; gap:8px; }
+  .mat-app button.share-btn svg{ flex-shrink:0; width:18px; height:18px; }
+  .mat-app button.btn-send{ display:flex; align-items:center; justify-content:center; gap:8px; }
+  .mat-app button.btn-send svg{ flex-shrink:0; width:18px; height:18px; }
+  .mat-app button.remove{ font-size:18px; border-radius:6px; padding:4px 10px; min-width:36px; max-width:40px; font-weight:bold; margin:0; }
+  .mat-app .screen-only{ background:var(--card-gray); padding:15px; border-radius:12px; box-shadow:var(--shadow); margin-bottom:12px; width:100%; }
+  .mat-app .button-group-row{ display:flex; gap:8px; margin:6px 0; }
+  .mat-app .button-group-row .btn-cell{ flex:1; padding:0; }
+  .mat-app .button-group-row button{ width:100%; margin:0; padding:14px 8px; font-size:15px; }
+  .mat-app .main-divider{ border:none; border-top:2px solid var(--border-gray); margin:12px 0; }
+  .mat-app .divider{ height:2px; background:var(--border-gray); margin:12px 0; border-radius:1px; }
+  .mat-app .table-container{ overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:10px; border-radius:8px; background:rgba(255,255,255,.03); width:100%; }
+  .mat-app table{ width:100%; max-width:100%; border-collapse:collapse; background:var(--card-gray); margin-bottom:10px; border-radius:8px; overflow:hidden; box-shadow:var(--shadow); min-width:650px; }
+  .mat-app th, .mat-app td{ border:1px solid var(--border-gray); padding:8px 4px; text-align:center; font-size:12px; white-space:nowrap; }
+  .mat-app th{ background:var(--header-gray); color:#fff; font-weight:600; text-transform:uppercase; font-size:10px; letter-spacing:.5px; padding:10px 4px; }
+  .mat-app #matMainTable th:first-child, .mat-app #matMainTable td:first-child{ min-width:30px; max-width:40px; }
+  .mat-app #matMainTable th:nth-child(2), .mat-app #matMainTable td:nth-child(2){ min-width:30px; max-width:40px; }
+  .mat-app #matMainTable th:nth-child(3), .mat-app #matMainTable td:nth-child(3){ min-width:180px; max-width:250px; }
+  .mat-app #matMainTable tr:nth-child(even) td{ background:rgba(255,255,255,.04); }
+  .mat-app .num-col{ font-weight:700; color:var(--text-gray); font-size:12px; background:rgba(255,255,255,.06) !important; min-width:30px; max-width:40px; }
+  .mat-app .name-cell{ cursor:pointer; text-align:left !important; min-width:180px; max-width:250px; overflow:hidden; text-overflow:ellipsis; font-weight:500; }
+  .mat-app .name-cell:active{ background:var(--primary-light); }
+  .mat-app .drag-handle{ cursor:grab; color:var(--text-gray); font-size:16px; font-weight:bold; user-select:none; padding:4px 2px; line-height:1; min-width:30px; max-width:40px; background:rgba(255,255,255,.06) !important; touch-action:none; }
+  .mat-app .drag-handle:active{ cursor:grabbing; color:var(--primary); }
+  .mat-app .sortable-ghost{ opacity:.4; background:var(--primary-light) !important; }
+  .mat-app .sortable-ghost td{ background:var(--primary-light) !important; }
+  .mat-app .sortable-chosen{ background:rgba(255,255,255,.10) !important; box-shadow:0 4px 12px rgba(0,0,0,.3); }
+  .mat-app .sortable-chosen td{ background:rgba(255,255,255,.10) !important; }
+  .mat-app .sortable-drag{ background:#2b313c; box-shadow:0 8px 24px rgba(0,0,0,.5); }
+  .mat-app input, .mat-app select{ width:100%; max-width:100%; box-sizing:border-box; padding:10px; font-size:14px; color:#eceef2; border:2px solid var(--border-gray); border-radius:8px; background:rgba(255,255,255,.07); transition:all .2s ease; -webkit-appearance:none; appearance:none; margin-bottom:8px; }
+  .mat-app input::placeholder{ color:#7d8592; }
+  .mat-app input:focus, .mat-app select:focus{ outline:none; border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-light); }
+  .mat-app input[type="number"]{ min-width:60px; max-width:80px; font-weight:600; text-align:center; }
+  .mat-app .profit-bar{
+    font-weight:bold; margin-top:10px; font-size:15px; text-align:right;
+    padding:12px; background:var(--card-gray); border-radius:8px;
+    box-shadow:var(--shadow); color:#4a9d5f; width:100%;
+  }
+  .mat-app .profit-bar span{ color:#4a9d5f; font-size:16px; margin-left:6px; }
+  .mat-app .total{
+    font-weight:bold; margin-top:8px; font-size:15px; text-align:right;
+    padding:12px; background:var(--card-gray); border-radius:8px;
+    box-shadow:var(--shadow); width:100%;
+  }
+  .mat-app .total-line{ margin:4px 0; color:var(--text-gray); }
+  .mat-app .total-line span{ margin-left:6px; color:#ffb52e; font-size:16px; font-weight:700; }
+  .mat-app .modal-content h2{ border-bottom:3px solid var(--primary); padding-bottom:8px; margin-bottom:12px; margin-top:0; font-size:16px; }
+  .mat-app label{ display:block; margin-top:12px; font-weight:600; color:var(--text-dark); font-size:13px; margin-bottom:4px; }
+  .mat-app .category-spoiler{ margin-bottom:10px; border:2px solid var(--border-gray); border-radius:10px; overflow:hidden; background:rgba(255,255,255,.03); }
+  .mat-app .category-header{ display:flex; align-items:center; padding:12px 15px; background:linear-gradient(135deg, rgba(255,255,255,.06) 0%, rgba(255,255,255,.02) 100%); user-select:none; border-bottom:1px solid transparent; }
+  .mat-app .category-spoiler.open .category-header{ background:var(--primary-light); border-bottom:1px solid var(--border-gray); }
+  .mat-app .category-drag-handle{ cursor:grab; color:var(--text-gray); font-size:16px; font-weight:bold; user-select:none; padding:4px 8px 4px 0; touch-action:none; flex-shrink:0; }
+  .mat-app .category-drag-handle:active{ cursor:grabbing; color:var(--primary); }
+  .mat-app .category-arrow{ font-size:12px; color:var(--primary); margin-right:10px; font-weight:bold; width:15px; flex-shrink:0; }
+  .mat-app .category-name{ flex:1; font-size:15px; font-weight:600; color:var(--primary); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; cursor:pointer; }
+  .mat-app .category-count{ font-size:12px; color:var(--text-gray); background:rgba(255,255,255,.1); padding:2px 8px; border-radius:10px; margin-left:8px; flex-shrink:0; }
+  .mat-app .category-delete-btn{ background:rgba(220,38,38,.18); color:#ff9b9b; border:none; font-size:14px; font-weight:bold; width:28px; height:28px; border-radius:6px; margin-left:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; padding:0; box-shadow:none; }
+  .mat-app .category-content{ display:none; padding:10px; background:transparent; }
+  .mat-app .category-spoiler.open .category-content{ display:block; }
+  .mat-app .db-cat-table{ width:100%; border-collapse:collapse; background:var(--card-gray); table-layout:fixed; min-width:400px; }
+  .mat-app .db-cat-table th, .mat-app .db-cat-table td{ border:1px solid var(--border-gray); padding:6px 3px; text-align:center; font-size:12px; vertical-align:middle; }
+  .mat-app .db-cat-table th{ background:var(--header-gray); color:#fff; font-size:10px; font-weight:600; text-transform:uppercase; padding:8px 3px; }
+  .mat-app .db-cat-table .db-num{ width:5%; }
+  .mat-app .db-cat-table .db-drag{ width:5%; }
+  .mat-app .db-cat-table .db-name{ width:47%; text-align:left; }
+  .mat-app .db-cat-table .db-unit{ width:12%; }
+  .mat-app .db-cat-table .db-price{ width:21%; }
+  .mat-app .db-cat-table .db-del{ width:10%; }
+  .mat-app .db-cat-table td.db-name{ white-space:normal; word-wrap:break-word; overflow-wrap:break-word; line-height:1.3; }
+  .mat-app .db-cat-table td.db-name input{ font-size:12px; padding:6px 4px; }
+  .mat-app .db-cat-table td.db-unit input, .mat-app .db-cat-table td.db-price input{ width:100% !important; max-width:100% !important; min-width:0 !important; font-size:12px; padding:6px 4px; text-align:center; }
+  .mat-app .db-cat-table .db-drag{ cursor:grab; color:var(--text-gray); font-size:16px; font-weight:bold; user-select:none; background:rgba(255,255,255,.06) !important; touch-action:none; }
+  .mat-app .db-cat-table .db-num{ font-weight:700; color:var(--text-gray); background:rgba(255,255,255,.06) !important; }
+  .mat-app .picker-hint{ font-size:12px; color:var(--text-gray); margin:-8px 0 15px 0; text-align:center; }
+  .mat-app .material-card{ display:flex; align-items:center; padding:12px 14px; margin-bottom:8px; background:rgba(255,255,255,.05); border:2px solid var(--border-gray); border-radius:10px; cursor:pointer; user-select:none; }
+  .mat-app .material-card:active{ transform:scale(.98); background:var(--primary-light); border-color:var(--primary); }
+  .mat-app .material-card-info{ flex:1; min-width:0; }
+  .mat-app .material-card-name{ font-size:14px; font-weight:600; color:var(--text-dark); margin-bottom:3px; word-wrap:break-word; line-height:1.3; }
+  .mat-app .material-card-meta{ font-size:11px; color:var(--text-gray); }
+  .mat-app .material-card-price{ font-size:15px; font-weight:700; color:var(--primary); margin-left:10px; white-space:nowrap; flex-shrink:0; }
+  .mat-app .material-card-plus{ width:32px; height:32px; background:var(--primary); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:bold; margin-left:10px; flex-shrink:0; }
+  .mat-app .db-actions{ display:flex; gap:8px; margin-top:10px; padding-top:10px; border-top:2px solid var(--border-gray); }
+  .mat-app .db-actions .btn-cell{ flex:1; }
+  .mat-app .db-actions button{ width:100%; margin:0; padding:14px 8px; font-size:15px; }
+  .mat-app #matToast{
+    position:fixed; left:50%; bottom:20%;
+    transform:translate(-50%, 30px);
+    opacity:0; visibility:hidden; pointer-events:none;
+    background:#2D3748; color:#fff; padding:12px 20px; border-radius:8px;
+    font-size:14px; font-weight:500; z-index:10001;
+    transition: transform .25s ease, opacity .25s ease, visibility 0s linear .25s;
+    box-shadow:0 4px 20px rgba(0,0,0,.5); max-width:90%; text-align:center;
+  }
+  .mat-app #matToast.show{
+    transform:translate(-50%, 0); opacity:1; visibility:visible; pointer-events:auto;
+    transition: transform .25s ease, opacity .25s ease, visibility 0s;
+  }
+  @media (min-width:1025px){
+    .mat-app{ max-width:1024px; margin:0 auto; padding:20px 30px; box-shadow:0 0 40px rgba(0,0,0,.35); }
+    .mat-app .screen-only{ padding:20px; }
+    .mat-app h1{ font-size:24px; margin-bottom:16px; }
+    .mat-app button{ padding:16px; font-size:16px; }
+    .mat-app .button-group-row{ gap:12px; margin:10px 0; }
+    .mat-app .button-group-row button{ padding:16px 12px; font-size:16px; }
+    .mat-app .modal-content{ max-width:700px; padding:25px; }
+    .mat-app .profit-bar, .mat-app .total{ font-size:17px; padding:15px; }
+    .mat-app .profit-bar span, .mat-app .total-line span{ font-size:20px; }
+    .mat-app th, .mat-app td{ font-size:13px; padding:10px 6px; }
+    .mat-app input, .mat-app select{ font-size:14px; padding:10px; }
+  }
+  @media (min-width:1400px){ .mat-app{ max-width:1024px; padding:25px 40px; } }
+  @media (max-width:1024px) and (orientation:landscape) and (max-height:500px){
+    .mat-app{ padding:8px 15px; }
+    .mat-app h1{ font-size:18px; margin-bottom:8px; }
+    .mat-app .screen-only{ padding:10px; margin-bottom:8px; }
+    .mat-app button{ padding:10px; font-size:14px; margin:4px 0; }
+    .mat-app .button-group-row button{ padding:10px 6px; font-size:13px; }
+    .mat-app .profit-bar, .mat-app .total{ font-size:15px; padding:10px; margin-top:6px; }
+    .mat-app .modal-content{ max-height:95%; padding:15px; }
+  }
+  @media (max-width:600px){
+    .mat-app{ padding:calc(8px + var(--safe-area-top)) 8px calc(15px + var(--safe-area-bottom)) 8px; }
+    .mat-app h1{ font-size:18px; }
+    .mat-app .screen-only{ padding:12px; }
+    .mat-app .modal-content{ padding:15px; max-width:100%; }
+  }
+  @media (max-width:360px){
+    .mat-app{ padding:calc(5px + var(--safe-area-top)) 5px calc(10px + var(--safe-area-bottom)) 5px; }
+    .mat-app h1{ font-size:16px; }
+    .mat-app button{ padding:12px; font-size:14px; }
+    .mat-app .screen-only{ padding:10px; }
+    .mat-app .button-group-row button{ font-size:14px; padding:12px 8px; }
+  }
+
+  #pdfContainer, #matPdfContainer{
+    display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(20,22,28,0.95); z-index:9999; overflow:auto; padding:15px; box-sizing:border-box;
+  }
+  #closePdfPreview, #matClosePdfPreview{
+    position:fixed; top:calc(10px + env(safe-area-inset-top,0px)); right:10px;
+    background:#6aa6ff; color:#fff; border:none; padding:10px 16px; cursor:pointer;
+    z-index:10000; border-radius:8px; font-weight:600; width:auto;
+  }
+  #matClosePdfPreview{ background:#ff8b5e; }
+  .pdf-content{
+    background:#fff; color:#2D3748;
+    max-width:800px; margin:0 auto 30px auto;
+    padding:15px; border-radius:8px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.5);
+    font-family:'Roboto','Arial',sans-serif !important;
+    letter-spacing:.3px; word-spacing:2px;
+  }
+  .pdf-header{ text-align:left; margin-bottom:15px; border-bottom:2px solid #2D3748; padding-bottom:10px; }
+  .pdf-header h2{ margin:0; font-size:20px; color:#2D3748; font-weight:700; letter-spacing:.5px; text-transform:uppercase; }
+  .pdf-customer{ font-size:13px; font-weight:600; margin:8px 0; color:#4A5568; letter-spacing:.3px; }
+  .pdf-table{ width:100%; border-collapse:collapse; margin-bottom:15px; page-break-inside:auto; }
+  .pdf-table th, .pdf-table td{ border:1px solid #CBD5E0; padding:6px 4px; font-size:11px; letter-spacing:.2px; word-spacing:1px; page-break-inside:avoid; break-inside:avoid; }
+  .pdf-table th{ background:#4A5568; color:#fff; font-weight:600; letter-spacing:.5px; text-transform:uppercase; font-size:10px; page-break-after:avoid; break-after:avoid; }
+  .pdf-table tbody{ page-break-inside:auto; }
+  .pdf-table tr{ page-break-inside:avoid; break-inside:avoid; }
+  .pdf-total-wrapper{ page-break-inside:avoid; break-inside:avoid; margin-top:15px; border-top:2px solid #2D3748; padding-top:10px; }
+  .pdf-total{ text-align:right; font-size:16px; font-weight:700; color:#2D3748; padding:8px 0; letter-spacing:.3px; page-break-inside:avoid; break-inside:avoid; }
+  .pdf-total-words{ text-align:left; font-size:13px; color:#2D3748; margin-top:10px; font-weight:700; letter-spacing:.3px; }
+  .pdf-vat{ text-align:left; font-size:11px; color:#718096; margin-top:5px; }
+  .pdf-signatures{ display:flex; justify-content:space-between; margin-top:50px; page-break-inside:avoid; break-inside:avoid; }
+  .signature-block{ width:45%; text-align:center; }
+  .signature-line{ border-top:1px solid #2D3748; margin-bottom:5px; padding-top:5px; }
+  .signature-label{ font-size:12px; font-weight:600; color:#2D3748; letter-spacing:.3px; text-transform:uppercase; }
+  .signature-name{ font-size:10px; color:#718096; margin-top:4px; min-height:25px; word-wrap:break-word; letter-spacing:.2px; }
+  .signature-phone{ font-size:10px; color:#4A5568; margin-top:2px; letter-spacing:.2px; font-weight:500; }
+  .pdf-page-break{ page-break-before:always; break-before:page; margin-top:30px; padding-top:20px; }
+  .pdf-works-list-header{ text-align:left; margin-bottom:8px; }
+  .pdf-works-list-header h2{ margin:0; font-size:20px; color:#2D3748; font-weight:700; letter-spacing:.5px; text-transform:uppercase; }
+  .pdf-works-subheader{ text-align:left; font-size:14px; font-weight:700; color:#2D3748; letter-spacing:.3px; padding-bottom:8px; margin-bottom:15px; border-bottom:2px solid #2D3748; text-transform:uppercase; }
+  .pdf-works-list-info{ margin-bottom:15px; font-size:12px; color:#4A5568; }
+  .pdf-works-list-info div{ margin:4px 0; }
+  .pdf-works-list-info .label{ font-weight:600; color:#2D3748; }
+  .works-table{ width:100%; border-collapse:collapse; margin-bottom:20px; font-size:10px; table-layout:fixed; page-break-inside:auto; }
+  .works-table th, .works-table td{ border:1px solid #CBD5E0; padding:6px 3px; text-align:center; vertical-align:middle; page-break-inside:avoid; break-inside:avoid; word-wrap:break-word; overflow-wrap:break-word; }
+  .works-table th{ background:#4A5568; color:#fff; font-size:9px; font-weight:600; text-transform:uppercase; letter-spacing:.3px; padding:8px 3px; page-break-after:avoid; break-after:avoid; }
+  .works-table tr{ page-break-inside:avoid; break-inside:avoid; }
+  .works-table tbody{ page-break-inside:auto; }
+  .works-table tbody tr:nth-child(even) td{ background:#F7FAFC !important; }
+  .works-table td.w-num, .works-table th.w-num{ width:4%; font-weight:700; color:#718096; font-size:10px; }
+  .works-table td.w-name, .works-table th.w-name{ width:30%; text-align:left; white-space:normal; word-break:normal; word-wrap:break-word; overflow-wrap:break-word; hyphens:none; -webkit-hyphens:none; -ms-hyphens:none; line-height:1.3; padding:5px 4px; font-size:10px; }
+  .works-table td.w-unit, .works-table th.w-unit{ width:5%; font-size:10px; }
+  .works-table td.w-qty, .works-table th.w-qty{ width:8%; font-size:10px; }
+  .works-table td.w-price, .works-table th.w-price{ width:11%; font-size:10px; }
+  .works-table td.w-sum, .works-table th.w-sum{ width:12%; font-weight:600; font-size:10px; }
+  .works-table th.w-date, .works-table th.w-sign{ width:15%; }
+  .works-table td.w-date{ width:15%; height:32px; background:#FAFAFA !important; }
+  .works-table td.w-sign{ width:15%; height:32px; background:#FAFAFA !important; }
+  .works-table tbody tr:nth-child(even) td.w-date,
+  .works-table tbody tr:nth-child(even) td.w-sign{ background:#EDF2F7 !important; }
+  @media print{
+    .bg, .topbar, .app-topbar{ display:none !important; }
+  }
+</style>
+</head>
+
+<body>
+
+  <div class="bg" id="bgLayer" aria-hidden="true">
+    <div id="particles"></div>
+  </div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="bolt">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4.8 13.4h5.3L10.6 22l8.6-11.4h-5.3L13 2Z"/></svg>
+      </span>
+      ШТРОБЛЕНИЕ · ЭЛЕКТРОМОНТАЖ
+    </div>
+    <div class="date" id="today"></div>
+  </header>
+
+  <main>
+    <section class="screen active" id="screen-home">
+      <div class="home-inner">
+        <div class="hero-bolt">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4.8 13.4h5.3L10.6 22l8.6-11.4h-5.3L13 2Z"/></svg>
+        </div>
+        <p class="eyebrow">Электрика в квартирах под ключ</p>
+        <h1 class="home-title">Смета
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4.8 13.4h5.3L10.6 22l8.6-11.4h-5.3L13 2Z"/></svg>
+        </h1>
+        <p class="home-sub">Услуги и материалы — два раздела, один помощник. Выберите, с чего начать.</p>
+        <div class="btn-stack">
+          <button class="big-btn" data-target="services">
+            <span class="tile">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4.5" width="12" height="16" rx="2"/><rect x="9" y="2.5" width="6" height="4" rx="1.2"/><path d="M9.5 11h5M9.5 14.5h5M9.5 18h3"/></svg>
+            </span>
+            <span class="labels">
+              <span class="l1">Смета услуг</span>
+              <span class="l2">работы и расценки</span>
+            </span>
+            <span class="chev">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+            </span>
+          </button>
+          <button class="big-btn" data-target="materials">
+            <span class="tile">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2.2l2.3 11h11.2l2-8H7"/><circle cx="9.6" cy="19.6" r="1.5"/><circle cx="17.4" cy="19.6" r="1.5"/></svg>
+            </span>
+            <span class="labels">
+              <span class="l1">Смета материалов</span>
+              <span class="l2">закупка на объект</span>
+            </span>
+            <span class="chev">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+            </span>
+          </button>
+        </div>
+        <div class="status"><span class="dot"></span> Готов к работе</div>
+        <button id="installAppBtn" class="install-btn">📲 Установить приложение</button>
+        <div class="app-version" id="appVersion">version 1.81.0</div>
+      </div>
+    </section>
+
+    <section class="screen app-screen" id="screen-services">
+      <div class="app-topbar">
+        <button class="back-btn" data-back>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+          Назад
+        </button>
+        <div class="app-title">Смета услуг</div>
+      </div>
+      <div class="app-body">
+        <div class="svc-app">
+          <div id="toast"></div>
+
+          <div id="pdfContainer">
+            <button id="closePdfPreview" onclick="closePdfPreview()">✕ Закрыть</button>
+            <div class="pdf-content" id="pdfContent">
+              <div class="pdf-header">
+                <h2 id="pdfTitle">Смета работ №</h2>
+                <div class="pdf-customer" id="pdfCustomer"></div>
+                <p style="font-size: 11px; color: #718096; margin-top: 3px;">Дата: <span id="pdfDate"></span></p>
+              </div>
+              <table class="pdf-table" id="pdfTable">
+                <thead><tr><th class="num-col">№</th><th>Наименование работ</th><th>Ед.</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead>
+                <tbody id="pdfTableBody"></tbody>
+              </table>
+              <div class="pdf-total-wrapper">
+                <div class="pdf-total" id="pdfTotalBlock">Итого к оплате: <span id="pdfGrandTotal">0</span> ₽</div>
+                <div class="pdf-total-words" id="pdfTotalWords">Всего к оплате: <span id="pdfTotalWordsText"></span></div>
+                <div class="pdf-vat">НДС не облагается</div>
+                <div class="pdf-signatures">
+                  <div class="signature-block">
+                    <div class="signature-line"></div>
+                    <div class="signature-label">Заказчик</div>
+                    <div class="signature-name" id="pdfCustomerSign"></div>
+                    <div class="signature-phone" id="pdfCustomerPhone" style="display:none;"></div>
+                  </div>
+                  <div class="signature-block">
+                    <div class="signature-line"></div>
+                    <div class="signature-label">Исполнитель</div>
+                    <div class="signature-name" id="pdfContractorSign"></div>
+                    <div class="signature-phone" id="pdfContractorPhone" style="display:none;"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="pdf-page-break" id="pdfWorksListBlock">
+                <div class="pdf-works-list-header"><h2>Список выполненных работ</h2></div>
+                <div class="pdf-works-subheader" id="pdfWorksSubheader"></div>
+                <div class="pdf-works-list-info">
+                  <div><span class="label">Объект:</span> <span id="pdfWorksListAddress"></span></div>
+                  <div><span class="label">Дата составления:</span> <span id="pdfWorksListDate"></span></div>
+                </div>
+                <table class="works-table" id="pdfWorksTable">
+                  <colgroup><col class="w-num"><col class="w-name"><col class="w-unit"><col class="w-qty"><col class="w-price"><col class="w-sum"><col class="w-date"><col class="w-sign"></colgroup>
+                  <thead><tr><th class="w-num">№</th><th class="w-name">Наименование работ</th><th class="w-unit">Ед.</th><th class="w-qty">Кол-во</th><th class="w-price">Цена</th><th class="w-sum">Сумма</th><th class="w-date">Дата</th><th class="w-sign">Подпись</th></tr></thead>
+                  <tbody id="pdfWorksTableBody"></tbody>
+                </table>
+                <div class="pdf-signatures">
+                  <div class="signature-block">
+                    <div class="signature-line"></div>
+                    <div class="signature-label">Заказчик</div>
+                    <div class="signature-name" id="pdfWorksCustomerSign"></div>
+                    <div class="signature-phone" id="pdfWorksCustomerPhone" style="display:none;"></div>
+                  </div>
+                  <div class="signature-block">
+                    <div class="signature-line"></div>
+                    <div class="signature-label">Исполнитель</div>
+                    <div class="signature-name" id="pdfWorksContractorSign"></div>
+                    <div class="signature-phone" id="pdfWorksContractorPhone" style="display:none;"></div>
+                  </div>
+                </div>
+              </div>
+              <div style="height: 30px; clear: both;"></div>
+            </div>
+          </div>
+
+          <input type="file" id="importFileInput" accept=".json" onchange="handleFileImport(event)" style="display:none;">
+          <input type="file" id="importEstimateInput" accept=".json" onchange="handleEstimateImport(event)" style="display:none;">
+
+          <div class="screen-only">
+            <h1>📋 Список выполняемых работ</h1>
+            <div class="button-group-row">
+              <button class="btn-blue" onclick="openSettings()">⚙ Настройки</button>
+              <button class="btn-blue" onclick="openDB()">📚 База данных</button>
+            </div>
+            <div style="margin-top: 15px; border-top: 2px solid var(--border-gray); padding-top: 15px;">
+              <div class="section-title" style="text-align:center; margin-top:0; margin-bottom:10px; color:var(--text-gray); font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Работа со сметой</div>
+              <div class="button-group-row">
+                <button class="btn-gray" onclick="saveEstimate()">💾 Сохранить</button>
+                <button class="btn-gray" onclick="loadEstimateTrigger()">📂 Загрузить</button>
+              </div>
+            </div>
+            <div style="margin-top: 15px; border-top: 2px solid var(--border-gray); padding-top: 15px;">
+              <div class="section-title" style="text-align:center; margin-top:0; margin-bottom:10px; color:var(--text-gray); font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Экспорт в PDF</div>
+              <div class="button-group-row">
+                <button class="btn-green" onclick="generatePDF('client')">📄 Для заказчика</button>
+                <button class="btn-purple" onclick="generatePDF('me')">🛠 Для меня</button>
+              </div>
+              <button class="btn-gray share-btn" onclick="sharePDF()">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                Поделиться
+              </button>
+            </div>
+          </div>
+
+          <div class="screen-only">
+            <button class="btn-green" onclick="openSelectServiceModal()">➕ Добавить услугу</button>
+            <hr class="main-divider">
+            <div class="table-container">
+              <table id="mainTable">
+                <thead><tr><th>№</th><th>⇅</th><th>Наименование работ</th><th>Ед.</th><th>Кол-во</th><th>Цена</th><th>Сумма</th><th></th></tr></thead>
+                <tbody id="mainTableBody"></tbody>
+              </table>
+            </div>
+            <div class="total">Итого: <span id="grandTotal">0</span> ₽</div>
+          </div>
+
+          <div class="modal" id="settings">
+            <div class="modal-content">
+              <h2>⚙ Настройки сметы</h2>
+              <label>🔢 Номер сметы</label>
+              <input id="estimateNumberInput" type="text" placeholder="Например: 001 или 2024-001">
+              <label>👤 Имя заказчика</label>
+              <input id="customerNameInput" type="text" placeholder="Иванов Иван Иванович">
+              <label>📍 Адрес объекта</label>
+              <input id="customerAddressInput" type="text" placeholder="ул. Строителей 1, кв. 10">
+              <label>📈 Глобальная корректировка цены (%)</label>
+              <div class="markup-row">
+                <button class="markup-btn minus" onclick="changeMarkup(-1)">◀</button>
+                <input id="globalMarkupInput" type="number" value="0" step="1">
+                <button class="markup-btn plus" onclick="changeMarkup(1)">▶</button>
+              </div>
+              <span class="small">◀ — уменьшить (скидка), ▶ — увеличить (наценка). Может быть отрицательным.</span>
+              <label>🛠 Данные исполнителя (для подписи)</label>
+              <input id="contractorInfoInput" type="text" placeholder="Петров П.П.">
+              <hr class="settings-divider">
+              <h3 style="margin-top:0;">📞 Телефоны сторон</h3>
+              <label>☎ Телефон заказчика</label>
+              <input id="customerPhoneInput" type="tel" placeholder="+7 (999) 123-45-67">
+              <label>☎ Телефон исполнителя</label>
+              <input id="contractorPhoneInput" type="tel" placeholder="+7 (999) 000-00-00">
+              <span class="small">Отображаются в PDF "Для меня" рядом с подписями</span>
+              <button class="btn-orange" onclick="resetSettings()" style="margin-top: 15px;">🔄 Сбросить параметры сметы</button>
+              <span class="small" style="text-align: center; margin-top: -5px; display: block;">Заказчик, %, исполнитель, телефоны (база работ не изменится)</span>
+              <button class="btn-green" onclick="saveAndCloseSettings()" style="margin-top: 20px;">💾 Сохранить настройки</button>
+            </div>
+          </div>
+
+          <div class="modal" id="dbModal">
+            <div class="modal-content">
+              <div class="db-modal-header">
+                <h2>📚 База работ и услуг</h2>
+                <span class="db-total-count">Всего в базе: <span id="servicesCount">0</span></span>
+              </div>
+              <div id="dbCategoriesContainer"></div>
+              <button class="btn-blue" onclick="addCategory()" style="margin-top: 10px;">➕ Добавить новую рубрику</button>
+              <button class="btn-green" onclick="openAddServiceModal()">➕ Добавить работу в базу</button>
+              <div class="button-group-row" style="margin-top: 10px;">
+                <button class="btn-gray" onclick="exportDB()">💾 Скачать базу</button>
+                <button class="btn-gray" onclick="importDBTrigger()">📂 Загрузить базу</button>
+              </div>
+              <button class="btn-blue" onclick="closeDB()" style="margin-top: 15px;">✓ Готово</button>
+            </div>
+          </div>
+
+          <div class="modal" id="addServiceModal">
+            <div class="modal-content">
+              <h2>➕ Добавить работу в базу</h2>
+              <label>Рубрика</label>
+              <select id="newServiceCategory"></select>
+              <label>Название работы</label>
+              <input id="newServiceName" type="text" placeholder="Например: Штробление стены">
+              <label>Единица измерения</label>
+              <input id="newServiceUnit" type="text" value="шт" placeholder="шт, м.пог., усл.">
+              <label>Цена (₽)</label>
+              <input id="newServicePrice" type="number" value="0" step="10">
+              <button class="btn-green" onclick="saveNewService()" style="margin-top: 15px;">✓ Добавить в базу</button>
+              <button class="btn-gray" onclick="closeAddServiceModal()">Отмена</button>
+            </div>
+          </div>
+
+          <div class="modal" id="selectServiceModal">
+            <div class="modal-content">
+              <h2>📋 Выберите услугу для сметы</h2>
+              <p style="font-size: 12px; color: var(--text-gray); margin-top: -10px; margin-bottom: 15px;">Откройте нужную рубрику и нажмите на услугу — она добавится в смету</p>
+              <div id="selectCategoriesContainer"></div>
+              <button class="btn-gray" onclick="closeSelectServiceModal()" style="margin-top: 15px;">✕ Отмена</button>
+            </div>
+          </div>
+
+          <div class="modal" id="svcSavePickerModal">
+            <div class="modal-content">
+              <h2>💾 Куда сохранить?</h2>
+              <p style="font-size:12px; color:var(--text-gray); margin:-8px 0 15px 0; text-align:center;" id="svcSavePickerHint"></p>
+              <button class="btn-blue" onclick="svc_saveViaFolder()">📁 Выбрать папку на устройстве</button>
+              <button class="btn-gray share-btn" onclick="svc_saveViaShare()">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                Через системное меню
+              </button>
+              <button class="btn-green" onclick="svc_saveViaDownload()">⬇ Быстро сохранить в «Загрузки»</button>
+              <button class="btn-gray" onclick="svc_closeSavePicker()">✕ Отмена</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen app-screen" id="screen-materials">
+      <div class="app-topbar">
+        <button class="back-btn" data-back>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+          Назад
+        </button>
+        <div class="app-title">Смета материалов</div>
+      </div>
+      <div class="app-body">
+        <div class="mat-app">
+          <div id="matToast"></div>
+
+          <div id="matPdfContainer">
+            <button id="matClosePdfPreview" onclick="mat_closePdfPreview()">✕ Закрыть</button>
+            <div class="pdf-content" id="matPdfContent">
+              <div class="pdf-header">
+                <h2 id="matPdfTitle">Смета материалов</h2>
+                <div class="pdf-customer" id="matPdfObject" style="display:none;"></div>
+                <p style="font-size: 11px; color: #718096; margin-top: 3px;">Дата: <span id="matPdfDate"></span></p>
+                <div class="pdf-customer" id="matPdfCustomer" style="display:none;"></div>
+              </div>
+              <table class="pdf-table" id="matPdfTable">
+                <thead><tr><th class="num-col">№</th><th>Наименование</th><th class="unit-col">Ед.</th><th class="qty-col">Кол-во</th><th class="price-col">Цена</th><th class="sum-col">Сумма</th></tr></thead>
+                <tbody id="matPdfTableBody"></tbody>
+              </table>
+              <div class="pdf-total-wrapper">
+                <div class="pdf-total pdf-grand-total" id="matPdfTotalBlock" style="display:none;">Итого к оплате: <span id="matPdfGrandTotal">0</span> ₽</div>
+              </div>
+              <div class="pdf-vat" id="matPdfNote" style="display:none;">* Смета носит предварительный характер: фактическая цена материалов может измениться при изменении цен поставщика</div>
+            </div>
+          </div>
+
+          <input type="file" id="matImportFileInput" accept=".json" onchange="mat_handleFileImport(event)" style="display:none;">
+          <input type="file" id="matImportEstimateInput" accept=".json" onchange="mat_handleEstimateImport(event)" style="display:none;">
+
+          <div class="screen-only">
+            <h1>📋 Смета материалов</h1>
+            <div class="button-group-row">
+              <div class="btn-cell"><button onclick="mat_openSettings()">⚙ Настройки</button></div>
+              <div class="btn-cell"><button onclick="mat_openDatabase()">📚 База материалов</button></div>
+            </div>
+            <div style="margin-top: 15px; border-top: 2px solid var(--border-gray); padding-top: 15px;">
+              <div class="section-title" style="text-align:center; margin-top:0; margin-bottom:10px; color:var(--text-gray); font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Работа со сметой</div>
+              <div class="button-group-row">
+                <div class="btn-cell"><button onclick="mat_saveEstimate()">💾 Сохранить</button></div>
+                <div class="btn-cell"><button onclick="mat_loadEstimateTrigger()">📂 Загрузить</button></div>
+              </div>
+            </div>
+            <div style="margin-top: 15px; border-top: 2px solid var(--border-gray); padding-top: 15px;">
+              <div class="section-title" style="text-align:center; margin-top:0; margin-bottom:10px; color:var(--text-gray); font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Экспорт в PDF</div>
+              <div class="button-group-row">
+                <div class="btn-cell"><button onclick="mat_savePDFClient()">📄 Клиент</button></div>
+                <div class="btn-cell"><button onclick="mat_savePDFList()">📋 Список</button></div>
+              </div>
+              <button class="btn-gray share-btn" onclick="mat_openSendModal()">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
+                Поделиться
+              </button>
+            </div>
+          </div>
+
+          <div class="screen-only">
+            <button class="btn-green" onclick="mat_openMaterialPicker()">➕ Добавить позицию</button>
+            <hr class="main-divider">
+            <div class="table-container">
+              <table id="matMainTable">
+                <thead><tr>
+                  <th>№</th><th>⇅</th><th>Наименование</th><th>Ед.</th><th>Кол-во</th><th>Цена</th><th>Сумма</th><th class="remove-col"></th>
+                </tr></thead>
+                <tbody id="matMainTableBody"></tbody>
+              </table>
+            </div>
+            <div class="profit-bar">📈 Прибыль: <span id="matProfitTotal">0</span> ₽</div>
+            <div class="total"><div class="total-line">💰 Итого к оплате: <span id="matGrandTotal">0</span> ₽</div></div>
+          </div>
+
+          <div class="modal" id="matSettings">
+            <div class="modal-content">
+              <h2>⚙ Настройки</h2>
+              <label>👤 Имя заказчика</label>
+              <input id="matCustomerNameInput" type="text" placeholder="Введите имя заказчика">
+              <label>📍 Объект</label>
+              <input id="matObjectAddressInput" type="text" placeholder="Адрес или название объекта">
+              <label>📈 Накрутка (%)</label>
+              <input id="matMarkupInput" type="number">
+              <label>🚚 Стоимость доставки (₽)</label>
+              <input id="matDeliveryInput" type="number">
+              <button class="btn-gray" onclick="mat_closeSettings()">Закрыть</button>
+            </div>
+          </div>
+
+          <div class="modal" id="matDatabase">
+            <div class="modal-content">
+              <h2>База материалов</h2>
+              <div id="matDbCategoriesContainer"></div>
+              <button class="btn-blue" onclick="mat_addCategory()" style="margin-top:10px;">➕ Добавить новую рубрику</button>
+              <button class="btn-green" onclick="mat_openAddMaterialModal()">➕ Добавить материал в базу</button>
+              <div class="db-actions">
+                <div class="btn-cell"><button class="btn-gray" onclick="mat_exportDB()">💾 Скачать базу</button></div>
+                <div class="btn-cell"><button class="btn-gray" onclick="mat_importDBTrigger()">📂 Загрузить базу</button></div>
+              </div>
+              <button class="btn-orange" onclick="mat_saveDatabase()" style="margin-top:15px;">✓ Готово</button>
+            </div>
+          </div>
+
+          <div class="modal" id="matAddMaterialModal">
+            <div class="modal-content">
+              <h2>➕ Добавить материал в базу</h2>
+              <label>Рубрика</label>
+              <select id="matNewMaterialCategory"></select>
+              <label>Название материала</label>
+              <input id="matNewMaterialName" type="text" placeholder="Например: Кабель ВВГнг-LS 3×2.5">
+              <label>Единица измерения</label>
+              <input id="matNewMaterialUnit" type="text" value="шт" placeholder="шт, м, упак">
+              <label>Цена закупа (₽)</label>
+              <input id="matNewMaterialPrice" type="number" value="0" step="0.1">
+              <button class="btn-green" onclick="mat_saveNewMaterial()" style="margin-top:15px;">✓ Добавить в базу</button>
+              <button class="btn-gray" onclick="mat_closeAddMaterialModal()">Отмена</button>
+            </div>
+          </div>
+
+          <div class="modal" id="matMaterialPicker">
+            <div class="modal-content">
+              <h2>📋 Выберите материал для сметы</h2>
+              <p class="picker-hint">Откройте нужную рубрику и нажмите на материал — он добавится в смету</p>
+              <div id="matPickerCategoriesContainer"></div>
+              <button class="btn-gray" onclick="mat_closeMaterialPicker()" style="margin-top:15px;">✕ Отмена</button>
+            </div>
+          </div>
+
+          <div class="modal" id="matSendModal">
+            <div class="modal-content">
+              <h2>📤 Поделиться</h2>
+              <p class="picker-hint">Выберите, какой документ отправить</p>
+              <button class="btn-orange" onclick="mat_sharePDF('client')">📄 Смета (клиент)</button>
+              <button class="btn-blue" onclick="mat_sharePDF('list')">📋 Список материалов</button>
+              <button class="btn-gray" onclick="mat_closeSendModal()">✕ Отмена</button>
+            </div>
+          </div>
+
+          <div class="modal" id="matSavePickerModal">
+            <div class="modal-content">
+              <h2>💾 Куда сохранить?</h2>
+              <p class="picker-hint" id="matSavePickerHint"></p>
+              <button class="btn-blue" onclick="mat_saveViaFolder()">📁 Выбрать папку на устройстве</button>
+              <button class="btn-send" onclick="mat_saveViaShare()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
+                Через системное меню
+              </button>
+              <button class="btn-green" onclick="mat_saveViaDownload()">⬇ Быстро сохранить в «Загрузки»</button>
+              <button class="btn-gray" onclick="mat_closeSavePicker()">✕ Отмена</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+<script>
+/* ═══════════ ФОН ═══════════ */
+(function(){
+  const IMG_URL = "https://abrakadabra.fun/uploads/posts/2022-03/1646791751_8-abrakadabra-fun-p-cherno-oranzhevie-oboi-na-telefon-12.jpg";
+  let imgNaturalW = 0, imgNaturalH = 0;
+  let imgReady = false;
+  function applyBackgroundSize(){
+    const layer = document.getElementById('bgLayer');
+    if (!layer) return;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    if (!imgReady || !imgNaturalW || !imgNaturalH) { layer.style.backgroundSize = `${vw}px ${vh}px`; return; }
+    const scale = Math.max(vw / imgNaturalW, vh / imgNaturalH);
+    const w = Math.ceil(imgNaturalW * scale);
+    const h = Math.ceil(imgNaturalH * scale);
+    layer.style.backgroundSize = `${w}px ${h}px`;
+  }
+  const probe = new Image();
+  probe.onload = () => { imgNaturalW = probe.naturalWidth; imgNaturalH = probe.naturalHeight; imgReady = true; applyBackgroundSize(); };
+  probe.src = IMG_URL;
+  applyBackgroundSize();
+  window.addEventListener('resize', applyBackgroundSize);
+  window.addEventListener('orientationchange', () => { setTimeout(applyBackgroundSize, 200); });
+})();
+</script>
+
+<script>
+/* ═══════════ СМЕТА УСЛУГ ═══════════ */
+window.addEventListener('load', () => { initMainTableSortable(); load(); });
+let _svcToastTimer = null;
+function showToast(message, duration = 700) {
+  const toast = document.getElementById('toast'); if (!toast) return;
+  toast.textContent = message; toast.classList.add('show');
+  clearTimeout(_svcToastTimer);
+  _svcToastTimer = setTimeout(() => { toast.classList.remove('show'); }, duration);
+}
+const getId = () => '_' + Math.random().toString(36).substr(2, 9);
+const defaultCategories = [
+  {id: "cat_1", name: "Штробление"},
+  {id: "cat_2", name: "Монтаж"},
+  {id: "cat_3", name: "Диагностика и поиск неисправности"}
+];
+const defaultServices = [
+  {id: getId(), name: "Штробление стены (бетон)", unit: "м.пог.", price: 350, categoryId: "cat_1"},
+  {id: getId(), name: "Штробление стены (кирпич/блок)", unit: "м.пог.", price: 250, categoryId: "cat_1"},
+  {id: getId(), name: "Укладка кабеля в гофре", unit: "м.пог.", price: 80, categoryId: "cat_2"},
+  {id: getId(), name: "Установка подрозетника", unit: "шт", price: 150, categoryId: "cat_2"},
+  {id: getId(), name: "Монтаж распределительной коробки", unit: "шт", price: 300, categoryId: "cat_2"},
+  {id: getId(), name: "Сборка и монтаж электрощита (до 12 модулей)", unit: "шт", price: 3500, categoryId: "cat_2"},
+  {id: getId(), name: "Установка розетки / выключателя", unit: "шт", price: 200, categoryId: "cat_2"},
+  {id: getId(), name: "Монтаж светильника", unit: "шт", price: 450, categoryId: "cat_2"},
+  {id: getId(), name: "Поиск обрыва кабеля", unit: "усл.", price: 1500, categoryId: "cat_3"},
+  {id: getId(), name: "Выезд на замер", unit: "усл.", price: 0, categoryId: "cat_3"}
+];
+let categoriesDB = [], servicesDB = [], dbSortableInstances = [], categoriesSortableInstance = null;
+let openCategories = new Set();
+
+function load(){
+  const cats = localStorage.getItem("categoriesDB"); categoriesDB = cats ? JSON.parse(cats) : defaultCategories;
+  const db = localStorage.getItem("servicesDB"); servicesDB = db ? JSON.parse(db) : defaultServices;
+  migrateOldData();
+  servicesDB.forEach(s => { if(!s.id) s.id = getId(); if(!s.categoryId) s.categoryId = categoriesDB[0]?.id || "cat_1"; });
+  document.getElementById("estimateNumberInput").value = localStorage.getItem("estimateNumber") || "";
+  document.getElementById("customerNameInput").value = localStorage.getItem("customerName") || "";
+  document.getElementById("customerAddressInput").value = localStorage.getItem("customerAddress") || "";
+  document.getElementById("globalMarkupInput").value = localStorage.getItem("globalMarkup") || "0";
+  document.getElementById("contractorInfoInput").value = localStorage.getItem("contractorInfo") || "";
+  document.getElementById("customerPhoneInput").value = localStorage.getItem("customerPhone") || "";
+  document.getElementById("contractorPhoneInput").value = localStorage.getItem("contractorPhone") || "";
+  updateTotalServicesCount(); recalcAll();
+}
+function updateTotalServicesCount() { const el = document.getElementById("servicesCount"); if (el) el.textContent = servicesDB.length; }
+function migrateOldData() {
+  if (servicesDB.length === 0) return;
+  const hasOldFormat = servicesDB.some(s => s.category && !s.categoryId);
+  if (!hasOldFormat) return;
+  const mapping = { "Штробление": "cat_1", "Монтаж": "cat_2", "Чистовые работы": "cat_2", "Диагностика и поиск неисправности": "cat_3", "Прочие работы": "cat_3" };
+  const oldCats = [...new Set(servicesDB.map(s => s.category).filter(Boolean))];
+  oldCats.forEach(catName => { if (!mapping[catName]) { const newId = getId(); categoriesDB.push({id: newId, name: catName}); mapping[catName] = newId; } });
+  servicesDB.forEach(s => { if (s.category && !s.categoryId) { s.categoryId = mapping[s.category] || categoriesDB[0].id; delete s.category; } });
+  saveCategories(); autoSave();
+}
+function saveCategories() { localStorage.setItem("categoriesDB", JSON.stringify(categoriesDB)); }
+function autoSave(){ localStorage.setItem("servicesDB", JSON.stringify(servicesDB)); }
+function saveSettingsData() {
+  localStorage.setItem("estimateNumber", document.getElementById("estimateNumberInput").value);
+  localStorage.setItem("customerName", document.getElementById("customerNameInput").value);
+  localStorage.setItem("customerAddress", document.getElementById("customerAddressInput").value);
+  localStorage.setItem("globalMarkup", document.getElementById("globalMarkupInput").value);
+  localStorage.setItem("contractorInfo", document.getElementById("contractorInfoInput").value);
+  localStorage.setItem("customerPhone", document.getElementById("customerPhoneInput").value);
+  localStorage.setItem("contractorPhone", document.getElementById("contractorPhoneInput").value);
+}
+function openSettings(){ document.getElementById("settings").style.display="flex"; document.getElementById("settings").scrollTop=0; }
+function closeSettings(){ document.getElementById("settings").style.display="none"; }
+function saveAndCloseSettings() { saveSettingsData(); closeSettings(); recalcAll(); showToast("Настройки сохранены"); }
+function openDB(){ document.getElementById("dbModal").style.display="flex"; document.getElementById("dbModal").scrollTop=0; renderDB(); }
+function closeDB(){ document.getElementById("dbModal").style.display="none"; }
+function resetSettings() {
+  if(confirm("Сбросить ТОЛЬКО данные заказчика, процент корректировки, данные исполнителя и телефоны?\n\nБаза данных работ останется без изменений.")) {
+    document.getElementById("estimateNumberInput").value = "";
+    document.getElementById("customerNameInput").value = "";
+    document.getElementById("customerAddressInput").value = "";
+    document.getElementById("globalMarkupInput").value = "0";
+    document.getElementById("contractorInfoInput").value = "";
+    document.getElementById("customerPhoneInput").value = "";
+    document.getElementById("contractorPhoneInput").value = "";
+    saveSettingsData(); recalcAll(); showToast("Параметры сметы сброшены");
+  }
+}
+function changeMarkup(delta) { const input = document.getElementById("globalMarkupInput"); let val = Number(input.value) || 0; val += delta; input.value = val; refreshMainTable(); }
+function refreshMainTable() {
+  const markupPercent = Number(document.getElementById("globalMarkupInput").value) || 0;
+  const multiplier = 1 + markupPercent / 100;
+  document.querySelectorAll("#mainTableBody tr").forEach(row => {
+    const sel = row.cells[2].querySelector("select"); const service = servicesDB.find(s => s.id === sel.value);
+    if (!service) { row.querySelector(".unit").textContent = "-"; row.querySelector(".price").textContent = "0"; row.querySelector(".sum").textContent = "0"; return; }
+    const qty = Number(row.cells[4].children[0].value) || 0;
+    const adjustedPrice = service.price * multiplier; const sum = adjustedPrice * qty;
+    row.querySelector(".unit").textContent = service.unit;
+    row.querySelector(".price").textContent = adjustedPrice.toFixed(0);
+    row.querySelector(".sum").textContent = sum.toFixed(0);
+  });
+  recalcAll();
+}
+function recalcAll() {
+  let finalTotal = 0;
+  document.querySelectorAll("#mainTableBody tr").forEach(r => { finalTotal += Number(r.querySelector(".sum").textContent) || 0; });
+  document.getElementById("grandTotal").textContent = finalTotal.toFixed(0);
+  window.pdfFinalTotal = finalTotal;
+  const markupPercent = Number(document.getElementById("globalMarkupInput").value) || 0;
+  const multiplier = 1 + markupPercent / 100;
+  window.pdfRawTotal = multiplier !== 0 ? finalTotal / multiplier : finalTotal;
+  window.pdfMarkupPercent = markupPercent;
+}
+document.getElementById("globalMarkupInput").oninput = () => { refreshMainTable(); };
+function numberToWords(number) {
+  const rubles = Math.floor(number);
+  const ones = ['', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
+  const teens = ['десять', 'одиннадцать', 'двенадцать', 'тринадцать', 'четырнадцать', 'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'];
+  const tens = ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'];
+  const hundreds = ['', 'сто', 'двести', 'триста', 'четыреста', 'пятьсот', 'шестьсот', 'семьсот', 'восемьсот', 'девятьсот'];
+  function getGroup(n) {
+    if (n === 0) return '';
+    const h = Math.floor(n / 100); const t = Math.floor((n % 100) / 10); const o = n % 10;
+    let result = '';
+    if (h > 0) result += hundreds[h] + ' ';
+    if (t === 1) result += teens[o] + ' ';
+    else { if (t > 0) result += tens[t] + ' '; if (o > 0) result += ones[o] + ' '; }
+    return result.trim();
+  }
+  function plural(n, forms) {
+    const m10 = n % 10, m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return forms[0];
+    if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return forms[1];
+    return forms[2];
+  }
+  const millions = Math.floor(rubles / 1000000);
+  const thousands = Math.floor((rubles % 1000000) / 1000);
+  const rest = rubles % 1000;
+  let result = '';
+  if (millions > 0) result += getGroup(millions) + ' ' + plural(millions, ['миллион', 'миллиона', 'миллионов']) + ' ';
+  if (thousands > 0) result += getGroup(thousands) + ' ' + plural(thousands, ['тысяча', 'тысячи', 'тысяч']) + ' ';
+  if (rest > 0 || result === '') result += getGroup(rest) + ' ';
+  result += plural(rubles, ['рубль', 'рубля', 'рублей']);
+  return result.trim();
+}
+function todayStr(){ const d = new Date(); const dd = String(d.getDate()).padStart(2,'0'); const mm = String(d.getMonth()+1).padStart(2,'0'); const yyyy = d.getFullYear(); return `${dd}-${mm}-${yyyy}`; }
+function sanitizeName(s){ return (s || '').replace(/[^a-zа-яё0-9\-_ ]/gi, '').trim(); }
+
+let svc_pendingSave = null;
+function svc_openSavePicker(blob, filename, mimeType){ svc_pendingSave = { blob, filename, mimeType: mimeType || blob.type }; document.getElementById("svcSavePickerHint").textContent = 'Файл: ' + filename; const modal = document.getElementById("svcSavePickerModal"); modal.style.display = "flex"; modal.scrollTop = 0; }
+function svc_closeSavePicker(){ document.getElementById("svcSavePickerModal").style.display = "none"; svc_pendingSave = null; }
+async function svc_saveViaFolder(){
+  if(!svc_pendingSave) return;
+  if(window.showSaveFilePicker){
+    try{
+      const name = svc_pendingSave.filename;
+      const isPdf = name.toLowerCase().endsWith('.pdf'); const isJson = name.toLowerCase().endsWith('.json');
+      const handle = await showSaveFilePicker({ suggestedName: name, types: [{ description: isPdf ? 'PDF документ' : (isJson ? 'Данные сметы (JSON)' : 'Файл'), accept: isPdf ? {'application/pdf':['.pdf']} : (isJson ? {'application/json':['.json']} : {}) }] });
+      const w = await handle.createWritable(); await w.write(svc_pendingSave.blob); await w.close();
+      svc_closeSavePicker(); showToast('Файл сохранён в выбранную папку');
+    }catch(err){ if(err && err.name === 'AbortError'){ svc_closeSavePicker(); return; } showToast('Не удалось сохранить: ' + err.message); }
+  } else { showToast('Браузер не поддерживает выбор папки. Используй «Быстро сохранить»'); }
+}
+async function svc_saveViaShare(){
+  if(!svc_pendingSave) return;
+  const blob = svc_pendingSave.blob; const filename = svc_pendingSave.filename;
+  try{ const file = new File([blob], filename, { type: blob.type }); if(navigator.share){ await navigator.share({ files: [file], title: 'Смета' }); svc_closeSavePicker(); showToast('Отправлено / сохранено'); } else { showToast('Система не поддерживает отправку файлов'); } }
+  catch(err){ if(err && err.name === 'AbortError'){ return; } showToast('Ошибка: ' + err.message); }
+}
+function svc_saveViaDownload(){ if(!svc_pendingSave) return; const url = URL.createObjectURL(svc_pendingSave.blob); const a = document.createElement('a'); a.href = url; a.download = svc_pendingSave.filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url), 1000); svc_closeSavePicker(); showToast('Файл сохранён в «Загрузки»'); }
+
+async function exportDB(){
+  const data = { categories: categoriesDB, services: servicesDB, exportDate: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const filename = 'база услуг ' + todayStr() + '.json';
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await showSaveFilePicker({ suggestedName: filename, types: [{ description: 'База JSON', accept: {'application/json':['.json']} }] });
+      const w = await handle.createWritable(); await w.write(blob); await w.close();
+      showToast('Файл сохранён: ' + filename);
+      return;
+    } catch(err) { if (err && err.name === 'AbortError') return; }
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  showToast('Файл сохранён в «Загрузки»');
+}
+function importDBTrigger(){ document.getElementById("importFileInput").click(); }
+function handleFileImport(event){
+  const file = event.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      const data = JSON.parse(e.target.result);
+      if(!data.services) throw new Error("Неверный формат");
+      if(confirm('Текущая база будет заменена. Продолжить?')){
+        openCategories.clear();
+        if (data.categories) { categoriesDB = data.categories; saveCategories(); }
+        servicesDB = data.services;
+        servicesDB.forEach(s => { if(!s.id) s.id = getId(); if(!s.categoryId) s.categoryId = categoriesDB[0]?.id || "cat_1"; });
+        autoSave(); refreshMainTable(); renderDB(); updateTotalServicesCount();
+        showToast('База работ загружена');
+      }
+    } catch(err){ alert('Ошибка: ' + err.message); }
+  };
+  reader.readAsText(file); event.target.value = '';
+}
+
+function renderDB(){
+  dbSortableInstances.forEach(inst => inst.destroy()); dbSortableInstances = [];
+  if (categoriesSortableInstance) { categoriesSortableInstance.destroy(); categoriesSortableInstance = null; }
+  const container = document.getElementById("dbCategoriesContainer"); if(!container) return;
+  container.innerHTML = "";
+  categoriesDB.forEach(cat => {
+    const services = servicesDB.filter(s => s.categoryId === cat.id);
+    const catDiv = document.createElement("div");
+    catDiv.className = "category-spoiler"; catDiv.dataset.catId = cat.id;
+    catDiv.innerHTML = `<div class="category-header"><span class="category-drag-handle" title="Перетащить рубрику">≡</span><span class="category-arrow">▶</span><span class="category-name" onclick="toggleCategory(this.closest('.category-spoiler'), '${cat.id}')">${cat.name}</span><span class="category-count">${services.length}</span><button class="category-delete-btn" onclick="deleteCategory('${cat.id}', event)" title="Удалить рубрику">🗑</button></div><div class="category-content"><div class="table-container"><table class="db-cat-table"><thead><tr><th class="db-num">№</th><th class="db-drag">⇅</th><th class="db-name">Название</th><th class="db-unit">Ед.</th><th class="db-price">Цена</th><th class="db-del"></th></tr></thead><tbody id="catBody_${cat.id}"></tbody></table></div></div>`;
+    container.appendChild(catDiv);
+    const tbody = catDiv.querySelector(`#catBody_${cat.id}`);
+    services.forEach((s, idx) => {
+      const r = tbody.insertRow(); r.dataset.serviceId = s.id;
+      r.innerHTML = `<td class="db-num">${idx + 1}</td><td class="db-drag">≡</td><td class="db-name"><input value="${s.name}"></td><td class="db-unit"><input value="${s.unit}"></td><td class="db-price"><input type="number" step="10" value="${s.price}"></td><td class="db-del"><button class="remove" onclick="deleteService('${s.id}')">×</button></td>`;
+      r.querySelectorAll("input").forEach(inp => { inp.oninput = () => { s.name = r.cells[2].children[0].value; s.unit = r.cells[3].children[0].value; s.price = Number(r.cells[4].children[0].value); autoSave(); refreshMainTable(); } });
+    });
+    if(typeof Sortable !== 'undefined') {
+      const sortable = Sortable.create(tbody, {
+        group: 'services', handle: '.db-drag', animation: 150,
+        ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen',
+        delay: 50, delayOnTouchOnly: true, touchStartThreshold: 3,
+        onEnd: function(evt) {
+          document.querySelectorAll('.category-spoiler').forEach(el => el.classList.remove('drag-over'));
+          const serviceId = evt.item.dataset.serviceId;
+          const newCatSpoiler = evt.to.closest('.category-spoiler'); if (!newCatSpoiler) return;
+          const newCatId = newCatSpoiler.dataset.catId;
+          const service = servicesDB.find(s => s.id === serviceId); if (service && service.categoryId !== newCatId) service.categoryId = newCatId;
+          const rows = evt.to.querySelectorAll('tr'); const newOrder = []; rows.forEach(row => { newOrder.push(row.dataset.serviceId); });
+          const catServices = newOrder.map(id => servicesDB.find(s => s.id === id)).filter(Boolean);
+          const otherServices = servicesDB.filter(s => s.categoryId !== newCatId);
+          servicesDB = [...catServices, ...otherServices];
+          autoSave(); renderDB(); updateTotalServicesCount(); refreshMainTable();
+          showToast("Услуга перемещена");
+        }
+      });
+      dbSortableInstances.push(sortable);
+    }
+  });
+  categoriesDB.forEach(cat => { const catDiv = container.querySelector(`[data-cat-id="${cat.id}"]`); if (catDiv && openCategories.has(cat.id)) { catDiv.classList.add("open"); const arrow = catDiv.querySelector(".category-arrow"); if (arrow) arrow.textContent = "▼"; } });
+  updateTotalServicesCount(); initCategoriesSortable();
+}
+function initCategoriesSortable() {
+  if (typeof Sortable === 'undefined') return;
+  const container = document.getElementById("dbCategoriesContainer"); if (!container) return;
+  categoriesSortableInstance = Sortable.create(container, {
+    handle: '.category-drag-handle', animation: 200,
+    ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen',
+    delay: 50, delayOnTouchOnly: true, touchStartThreshold: 3,
+    onEnd: function() { const catDivs = container.querySelectorAll('.category-spoiler'); const newOrder = []; catDivs.forEach(div => { newOrder.push(div.dataset.catId); }); categoriesDB = newOrder.map(id => categoriesDB.find(c => c.id === id)).filter(Boolean); saveCategories(); showToast("Порядок рубрик изменён"); }
+  });
+}
+function deleteCategory(catId, event) {
+  if (event) { event.stopPropagation(); event.preventDefault(); }
+  const cat = categoriesDB.find(c => c.id === catId); if (!cat) return;
+  const servicesCount = servicesDB.filter(s => s.categoryId === catId).length;
+  if (categoriesDB.length === 1) { alert("Нельзя удалить единственную рубрику! Должна остаться хотя бы одна."); return; }
+  let confirmMsg = `Удалить рубрику "${cat.name}"?`;
+  if (servicesCount > 0) confirmMsg += `\n\n⚠️ ВНИМАНИЕ: в этой рубрике ${servicesCount} ${servicesCount === 1 ? 'услуга' : (servicesCount < 5 ? 'услуги' : 'услуг')}.\nВсе они будут УДАЛЕНЫ БЕЗВОЗВРАТНО!`;
+  confirmMsg += '\n\nПродолжить?';
+  if (!confirm(confirmMsg)) return;
+  servicesDB = servicesDB.filter(s => s.categoryId !== catId);
+  categoriesDB = categoriesDB.filter(c => c.id !== catId); openCategories.delete(catId);
+  saveCategories(); autoSave(); refreshMainTable(); renderDB(); updateTotalServicesCount();
+  showToast(`Рубрика "${cat.name}" удалена`);
+}
+function toggleCategory(catDiv, catId) { if (!catDiv) return; catDiv.classList.toggle("open"); const arrow = catDiv.querySelector(".category-arrow"); const isOpen = catDiv.classList.contains("open"); arrow.textContent = isOpen ? "▼" : "▶"; if (isOpen) openCategories.add(catId); else openCategories.delete(catId); }
+function toggleCategorySimple(catDiv) { if (!catDiv) return; catDiv.classList.toggle("open"); const arrow = catDiv.querySelector(".category-arrow"); arrow.textContent = catDiv.classList.contains("open") ? "▼" : "▶"; }
+function addCategory() { const name = prompt("Введите название новой рубрики:"); if (!name || !name.trim()) return; categoriesDB.push({id: getId(), name: name.trim()}); saveCategories(); renderDB(); updateTotalServicesCount(); showToast("Рубрика добавлена"); }
+function openAddServiceModal() {
+  const select = document.getElementById("newServiceCategory"); select.innerHTML = "";
+  categoriesDB.forEach(cat => { const opt = document.createElement("option"); opt.value = cat.id; opt.textContent = cat.name; select.appendChild(opt); });
+  document.getElementById("newServiceName").value = ""; document.getElementById("newServiceUnit").value = "шт"; document.getElementById("newServicePrice").value = "0";
+  const modal = document.getElementById("addServiceModal"); modal.style.display = "flex"; modal.scrollTop = 0;
+}
+function closeAddServiceModal() { document.getElementById("addServiceModal").style.display = "none"; }
+function saveNewService() {
+  const categoryId = document.getElementById("newServiceCategory").value;
+  const name = document.getElementById("newServiceName").value.trim();
+  const unit = document.getElementById("newServiceUnit").value.trim() || "шт";
+  const price = Number(document.getElementById("newServicePrice").value) || 0;
+  if (!name) { alert("Введите название работы!"); return; }
+  servicesDB.push({ id: getId(), name, unit, price, categoryId });
+  autoSave(); closeAddServiceModal(); renderDB(); updateTotalServicesCount(); showToast("Работа добавлена в базу");
+}
+function deleteService(serviceId){
+  if(confirm('Удалить эту работу из базы?')){
+    const idx = servicesDB.findIndex(s => s.id === serviceId);
+    if (idx !== -1) { servicesDB.splice(idx, 1); autoSave(); renderDB(); updateTotalServicesCount(); refreshMainTable(); }
+  }
+}
+function openSelectServiceModal() {
+  if (servicesDB.length === 0) { showToast("База пуста! Добавьте работы в базу данных"); return; }
+  renderSelectServiceModal();
+  const modal = document.getElementById("selectServiceModal"); modal.style.display = "flex"; modal.scrollTop = 0;
+}
+function closeSelectServiceModal() { document.getElementById("selectServiceModal").style.display = "none"; }
+function renderSelectServiceModal() {
+  const container = document.getElementById("selectCategoriesContainer"); if(!container) return; container.innerHTML = "";
+  categoriesDB.forEach(cat => {
+    const services = servicesDB.filter(s => s.categoryId === cat.id); if (services.length === 0) return;
+    const catDiv = document.createElement("div"); catDiv.className = "category-spoiler"; catDiv.dataset.catId = cat.id;
+    let cardsHtml = '';
+    const markupPercent = Number(document.getElementById("globalMarkupInput").value) || 0;
+    const multiplier = 1 + markupPercent / 100;
+    services.forEach(s => { const adjustedPrice = s.price * multiplier; const priceText = adjustedPrice > 0 ? `${adjustedPrice.toFixed(0)} ₽/${s.unit}` : `Бесплатно`; cardsHtml += `<div class="service-card" onclick="selectService('${s.id}')"><div class="service-card-info"><div class="service-card-name">${s.name}</div><div class="service-card-meta">${s.unit}</div></div><div class="service-card-price">${priceText}</div><div class="service-card-plus">+</div></div>`; });
+    catDiv.innerHTML = `<div class="category-header" onclick="toggleCategorySimple(this.closest('.category-spoiler'))"><span class="category-arrow">▶</span><span class="category-name">${cat.name}</span><span class="category-count">${services.length}</span></div><div class="category-content">${cardsHtml}</div>`;
+    container.appendChild(catDiv);
+  });
+}
+function selectService(serviceId) { const service = servicesDB.find(s => s.id === serviceId); if (!service) return; addRowWithService(service); closeSelectServiceModal(); showToast(`Добавлено: ${service.name}`); }
+function addRowWithService(service) {
+  const tb = document.getElementById("mainTableBody");
+  const r = tb.insertRow();
+  r.innerHTML = `<td class="num-col">${tb.querySelectorAll("tr").length}</td><td class="drag-handle">≡</td><td><select></select></td><td class="unit">${service.unit}</td><td><input type="number" step="0.5" value="1"></td><td class="price">0</td><td class="sum">0</td><td><button class="remove" onclick="this.closest('tr').remove(); renumberMainTable(); recalcAll();">×</button></td>`;
+  const sel = r.cells[2].querySelector("select");
+  populateSelect(sel); sel.value = service.id;
+  function update(){
+    const s = servicesDB.find(x => x.id === sel.value);
+    if(!s) { r.querySelector(".unit").textContent = "-"; r.querySelector(".price").textContent = "0"; r.querySelector(".sum").textContent = "0"; recalcAll(); return; }
+    const qty = Number(r.cells[4].children[0].value) || 0;
+    const markupPercent = Number(document.getElementById("globalMarkupInput").value) || 0;
+    const adjustedPrice = s.price * (1 + markupPercent / 100);
+    r.querySelector(".unit").textContent = s.unit;
+    r.querySelector(".price").textContent = adjustedPrice.toFixed(0);
+    r.querySelector(".sum").textContent = (adjustedPrice * qty).toFixed(0);
+    recalcAll();
+  }
+  sel.onchange = update; r.cells[4].children[0].oninput = update; update(); renumberMainTable();
+}
+let mainSortableInstance = null;
+function initMainTableSortable() { if(typeof Sortable === 'undefined') return; const el = document.getElementById("mainTableBody"); if(!el) return; mainSortableInstance = Sortable.create(el, { handle: '.drag-handle', animation: 150, ghostClass: 'sortable-ghost', onEnd: function() { renumberMainTable(); recalcAll(); } }); }
+function renumberMainTable() { document.querySelectorAll("#mainTableBody tr").forEach((r, i) => { r.querySelector(".num-col").textContent = i + 1; }); }
+function populateSelect(sel) {
+  sel.innerHTML = "";
+  const emptyOpt = document.createElement("option"); emptyOpt.value = ""; emptyOpt.textContent = "-- Выберите работу --"; sel.appendChild(emptyOpt);
+  categoriesDB.forEach(cat => { const items = servicesDB.filter(s => s.categoryId === cat.id); if(items.length > 0) { const group = document.createElement("optgroup"); group.label = cat.name; items.forEach(s => { const o = document.createElement("option"); o.value = s.id; o.textContent = s.name; group.appendChild(o); }); sel.appendChild(group); } });
+}
+async function saveEstimate(){
+  const rows = [];
+  document.querySelectorAll("#mainTableBody tr").forEach(row => { const sel = row.cells[2].querySelector("select"); if(sel && sel.value) rows.push({ serviceId: sel.value, qty: row.cells[4].children[0].value }); });
+  if(rows.length === 0){ showToast('Смета пуста!'); return; }
+  const data = { type: 'estimate', estimateNumber: document.getElementById("estimateNumberInput").value, customerName: document.getElementById("customerNameInput").value, customerAddress: document.getElementById("customerAddressInput").value, contractorInfo: document.getElementById("contractorInfoInput").value, customerPhone: document.getElementById("customerPhoneInput").value, contractorPhone: document.getElementById("contractorPhoneInput").value, globalMarkup: document.getElementById("globalMarkupInput").value, rows, saveDate: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const cname = sanitizeName(data.customerName);
+  const filename = 'смета услуг' + (cname ? ' ' + cname : '') + ' ' + todayStr() + '.json';
+  svc_openSavePicker(blob, filename, 'application/json');
+}
+function loadEstimateTrigger(){ document.getElementById("importEstimateInput").click(); }
+function handleEstimateImport(event){
+  const file = event.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      const data = JSON.parse(e.target.result);
+      if(data.type !== 'estimate' || !data.rows) throw new Error("Неверный формат");
+      if(confirm('Текущая смета будет заменена. Продолжить?')){
+        if(data.estimateNumber !== undefined) document.getElementById("estimateNumberInput").value = data.estimateNumber;
+        if(data.customerName !== undefined) document.getElementById("customerNameInput").value = data.customerName;
+        if(data.customerAddress !== undefined) document.getElementById("customerAddressInput").value = data.customerAddress;
+        if(data.customerInfo && !data.customerName) document.getElementById("customerNameInput").value = data.customerInfo;
+        if(data.contractorInfo) document.getElementById("contractorInfoInput").value = data.contractorInfo;
+        if(data.customerPhone !== undefined) document.getElementById("customerPhoneInput").value = data.customerPhone;
+        if(data.contractorPhone !== undefined) document.getElementById("contractorPhoneInput").value = data.contractorPhone;
+        if(data.globalMarkup !== undefined) document.getElementById("globalMarkupInput").value = data.globalMarkup;
+        saveSettingsData();
+        const tbody = document.getElementById("mainTableBody"); tbody.innerHTML = "";
+        data.rows.forEach(rowData => { const service = servicesDB.find(s => s.id === rowData.serviceId); if (service) { addRowWithService(service); const lastRow = tbody.lastElementChild; lastRow.cells[4].children[0].value = rowData.qty; lastRow.cells[4].children[0].dispatchEvent(new Event('input')); } });
+        showToast('Смета загружена');
+      }
+    } catch(err){ alert('Ошибка: ' + err.message); }
+  };
+  reader.readAsText(file); event.target.value = '';
+}
+function preparePDFData(mode) {
+  const mainTbody = document.getElementById("mainTableBody");
+  const pdfTbody = document.getElementById("pdfTableBody");
+  const pdfWorksTbody = document.getElementById("pdfWorksTableBody");
+  pdfTbody.innerHTML = ""; pdfWorksTbody.innerHTML = "";
+  const estimateNumber = document.getElementById("estimateNumberInput").value;
+  document.getElementById("pdfTitle").textContent = "Смета работ №" + (estimateNumber || "");
+  const custName = document.getElementById("customerNameInput").value;
+  const custAddress = document.getElementById("customerAddressInput").value;
+  const contractorInfo = document.getElementById("contractorInfoInput").value;
+  const customerPhone = document.getElementById("customerPhoneInput").value;
+  const contractorPhone = document.getElementById("contractorPhoneInput").value;
+  const currentDate = new Date().toLocaleDateString('ru-RU');
+  document.getElementById("pdfCustomer").textContent = "Объект: " + (custAddress || "");
+  let rowNum = 1;
+  mainTbody.querySelectorAll("tr").forEach(row => {
+    const sel = row.cells[2].querySelector("select"); const service = servicesDB.find(s => s.id === sel.value);
+    const name = service ? service.name : "-"; const unit = service ? service.unit : "-";
+    const qty = row.cells[4].children[0].value; const price = row.cells[5].textContent; const sum = row.cells[6].textContent;
+    pdfTbody.insertRow().innerHTML = `<td class="num-col">${rowNum}</td><td style="text-align: left;">${name}</td><td>${unit}</td><td>${qty}</td><td>${price}</td><td>${sum}</td>`;
+    pdfWorksTbody.insertRow().innerHTML = `<td class="w-num">${rowNum}</td><td class="w-name">${name}</td><td class="w-unit">${unit}</td><td class="w-qty">${qty}</td><td class="w-price">${price}</td><td class="w-sum">${sum}</td><td class="w-date"></td><td class="w-sign"></td>`;
+    rowNum++;
+  });
+  let totalHtml = '';
+  if (mode === 'me' && window.pdfMarkupPercent !== 0) { totalHtml += `<div style="font-size: 11px; color: #718096;">Сумма работ: ${window.pdfRawTotal.toFixed(0)} ₽</div>`; totalHtml += `<div style="font-size: 11px; color: #718096;">Корректировка: ${window.pdfMarkupPercent > 0 ? '+' : ''}${window.pdfMarkupPercent}%</div>`; }
+  totalHtml += `<div style="font-size: 16px; font-weight: 700; margin-top: 4px;">Итого к оплате: ${window.pdfFinalTotal.toFixed(0)} ₽</div>`;
+  document.getElementById("pdfTotalBlock").innerHTML = totalHtml;
+  document.getElementById("pdfTotalWordsText").textContent = numberToWords(window.pdfFinalTotal);
+  document.getElementById("pdfCustomerSign").textContent = custName || "___________________";
+  document.getElementById("pdfContractorSign").textContent = contractorInfo || "___________________";
+  document.getElementById("pdfWorksListAddress").textContent = custAddress || "";
+  document.getElementById("pdfWorksListDate").textContent = currentDate;
+  document.getElementById("pdfWorksSubheader").textContent = "Смета №" + (estimateNumber || "");
+  document.getElementById("pdfWorksCustomerSign").textContent = custName || "___________________";
+  document.getElementById("pdfWorksContractorSign").textContent = contractorInfo || "___________________";
+  document.getElementById("pdfDate").textContent = currentDate;
+  const showPhones = (mode === 'me');
+  const phone1 = document.getElementById("pdfCustomerPhone"); const phone2 = document.getElementById("pdfContractorPhone");
+  phone1.style.display = (showPhones && customerPhone) ? "block" : "none"; if (showPhones && customerPhone) phone1.textContent = "☎ " + customerPhone;
+  phone2.style.display = (showPhones && contractorPhone) ? "block" : "none"; if (showPhones && contractorPhone) phone2.textContent = "☎ " + contractorPhone;
+  const phone3 = document.getElementById("pdfWorksCustomerPhone"); const phone4 = document.getElementById("pdfWorksContractorPhone");
+  phone3.style.display = (showPhones && customerPhone) ? "block" : "none"; if (showPhones && customerPhone) phone3.textContent = "☎ " + customerPhone;
+  phone4.style.display = (showPhones && contractorPhone) ? "block" : "none"; if (showPhones && contractorPhone) phone4.textContent = "☎ " + contractorPhone;
+}
+function getPdfOptions(filename) {
+  return {
+    margin: [8, 8, 10, 8], filename: filename,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, logging: false, letterRendering: true, scrollY: 0, windowWidth: document.documentElement.clientWidth },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['css', 'legacy'], before: ['.pdf-page-break'], after: [], avoid: ['.pdf-total-wrapper', '.pdf-total', '.pdf-header', '.pdf-signatures', 'thead', 'tr', '.pdf-works-list-header', '.pdf-works-list-info'] }
+  };
+}
+async function generatePDF(mode) {
+  if(typeof html2pdf === 'undefined') { showToast('Ошибка: PDF библиотека не загружена'); return; }
+  preparePDFData(mode);
+  const cname = sanitizeName(document.getElementById("customerNameInput").value);
+  const date = todayStr();
+  let filename;
+  if (mode === 'me') filename = 'смета услуг для меня' + (cname ? ' ' + cname : '') + ' ' + date + '.pdf';
+  else filename = 'смета услуг' + (cname ? ' ' + cname : '') + ' ' + date + '.pdf';
+  document.getElementById("pdfContainer").style.display = "block";
+  document.getElementById("closePdfPreview").style.display = "block";
+  document.fonts.ready.then(() => { setTimeout(() => {
+    const element = document.getElementById("pdfContent");
+    html2pdf().set(getPdfOptions(filename)).from(element).output('blob').then(blob => { closePdfPreview(); svc_openSavePicker(blob, filename, 'application/pdf'); }).catch(err => { console.error(err); showToast('Ошибка при создании PDF'); closePdfPreview(); });
+  }, 300); });
+}
+function sharePDF() {
+  if(typeof html2pdf === 'undefined') { showToast('Ошибка: PDF библиотека не загружена'); return; }
+  const mainTbody = document.getElementById("mainTableBody");
+  if (mainTbody.querySelectorAll("tr").length === 0) { showToast('Смета пуста! Добавьте услуги'); return; }
+  preparePDFData('client');
+  const cname = sanitizeName(document.getElementById("customerNameInput").value);
+  const filename = 'смета услуг' + (cname ? ' ' + cname : '') + ' ' + todayStr() + '.pdf';
+  document.getElementById("pdfContainer").style.display = "block";
+  document.getElementById("closePdfPreview").style.display = "block";
+  showToast('Формирую смету для отправки...', 700);
+  document.fonts.ready.then(() => { setTimeout(() => {
+    const element = document.getElementById("pdfContent");
+    html2pdf().set(getPdfOptions(filename)).from(element).output('blob').then(blob => {
+      closePdfPreview();
+      const file = new File([blob], filename, { type: 'application/pdf' });
+      if (navigator.share) { navigator.share({ files: [file], title: 'Смета на работы' }).then(() => showToast('Смета отправлена')).catch(err => { if (err && err.name !== 'AbortError') svc_openSavePicker(blob, filename, 'application/pdf'); }); }
+      else { svc_openSavePicker(blob, filename, 'application/pdf'); }
+    }).catch(err => { console.error(err); closePdfPreview(); showToast('Ошибка при создании PDF'); });
+  }, 300); });
+}
+function closePdfPreview() { document.getElementById("pdfContainer").style.display = "none"; document.getElementById("closePdfPreview").style.display = "none"; }
+</script>
+
+<script>
+/* ═══════════ СМЕТА МАТЕРИАЛОВ ═══════════ */
+const mat_getId=()=> '_'+Math.random().toString(36).substr(2,9);
+const mat_defaultCategories=[
+{id:mat_getId(),name:"Кабель",materials:[
+{id:mat_getId(),name:"Гофра ДКС 20 мм",unit:"м",price:17.5},{id:mat_getId(),name:"ВВГнг-LS 3×1,5 Конкорд",unit:"м",price:76},
+{id:mat_getId(),name:"ВВГнг-LS 3×2,5 Конкорд",unit:"м",price:96},{id:mat_getId(),name:"ВВГнг-LS 3×4 Конкорд",unit:"м",price:171},
+{id:mat_getId(),name:"ВВГнг-LS 3×6 Конкорд",unit:"м",price:241},{id:mat_getId(),name:"ВВГнг-LS 5×1,5 Конкорд",unit:"м",price:140},
+{id:mat_getId(),name:"КГВВнг(A)-LS 2×1,5",unit:"м",price:43},{id:mat_getId(),name:"ПВС 5×1,5",unit:"м",price:92},
+{id:mat_getId(),name:"ПУГВ 1×4 (Лемана)",unit:"м",price:106},{id:mat_getId(),name:"ПУГВ 1×6 (Лемана)",unit:"м",price:160}]},
+{id:mat_getId(),name:"Автоматика",materials:[
+{id:mat_getId(),name:"Автомат IEK 1P 10A",unit:"шт",price:175},{id:mat_getId(),name:"Автомат IEK 1P 16A",unit:"шт",price:155},
+{id:mat_getId(),name:"Автомат IEK 2P 40A",unit:"шт",price:380},{id:mat_getId(),name:"УЗО IEK 2P 40A 30mA",unit:"шт",price:1270},
+{id:mat_getId(),name:"УЗО IEK 2P 25A 10mA",unit:"шт",price:1220}]},
+{id:mat_getId(),name:"Щит",materials:[
+{id:mat_getId(),name:"Корпус ЩРВ-П-24 IEK",unit:"шт",price:2660},{id:mat_getId(),name:"Корпус ЩРВ-П-12 IEK",unit:"шт",price:1255},
+{id:mat_getId(),name:"Бокс ABB Mistral 41 24M",unit:"шт",price:4095},{id:mat_getId(),name:"Шина гребенчатая Schneider Easy9 (Лемана)",unit:"шт",price:731}]},
+{id:mat_getId(),name:"Расходники",materials:[
+{id:mat_getId(),name:"Подрозетник глубокий 68×60",unit:"шт",price:12},{id:mat_getId(),name:"Подрозетник для бетона (синий)",unit:"шт",price:8},
+{id:mat_getId(),name:"Коробка распределительная 60-0303 HF",unit:"шт",price:116},{id:mat_getId(),name:"Коробка распределительная 60-0300 HF",unit:"шт",price:132},
+{id:mat_getId(),name:"Площадка под стяжку",unit:"шт",price:5},{id:mat_getId(),name:"Стяжки нейлоновые 5×400 (100 шт)",unit:"упак",price:345},
+{id:mat_getId(),name:"Стяжки нейлоновые 4×300 (100 шт)",unit:"упак",price:182},{id:mat_getId(),name:"Стяжки нейлоновые 3×100 (100 шт)",unit:"упак",price:39},
+{id:mat_getId(),name:"Гильзы ГМЛ-П 8",unit:"шт",price:24},{id:mat_getId(),name:"Термоусадка 12/4",unit:"м",price:185},
+{id:mat_getId(),name:"Лента TOYA 50 м",unit:"рулон",price:1250},{id:mat_getId(),name:"Гвозди TOYA",unit:"упак",price:1947},
+{id:mat_getId(),name:"Газовый баллон TOYA",unit:"шт",price:440},{id:mat_getId(),name:"НШВИ 1.5-8 Duwi (Лемана)",unit:"упак",price:72},
+{id:mat_getId(),name:"НШВИ 2.5-8 Duwi (Лемана)",unit:"упак",price:85},{id:mat_getId(),name:"НШВИ 4-9 Duwi (Лемана)",unit:"упак",price:107},
+{id:mat_getId(),name:"НШВИ 6-12 Duwi (Лемана)",unit:"упак",price:178},{id:mat_getId(),name:"НШВИ 10-14 Duwi (Лемана)",unit:"упак",price:180}]}
+];
+let mat_categories=[], mat_markup=30, mat_deliveryPrice=0, mat_customerName="", mat_objectAddress="";
+let mat_dbSortableInstances=[], mat_categoriesSortableInstance=null, mat_pickerTargetRow=null, mat_pendingSave=null;
+
+function mat_loadData(){
+  const oldDb=localStorage.getItem("materials_full"); const newDb=localStorage.getItem("materials_categories");
+  if(newDb){mat_categories=JSON.parse(newDb);}
+  else if(oldDb){ const oldMats=JSON.parse(oldDb); oldMats.forEach(m=>{if(!m.id)m.id=mat_getId();}); mat_categories=[{id:mat_getId(),name:"Разное",materials:oldMats}]; mat_saveCategories();localStorage.removeItem("materials_full"); }
+  else{mat_categories=JSON.parse(JSON.stringify(mat_defaultCategories));mat_saveCategories();}
+  mat_markup=Number(localStorage.getItem("markup"))||30; document.getElementById("matMarkupInput").value=mat_markup;
+  mat_deliveryPrice=Number(localStorage.getItem("deliveryPrice"))||0; document.getElementById("matDeliveryInput").value=mat_deliveryPrice;
+  mat_customerName=localStorage.getItem("customerName")||""; document.getElementById("matCustomerNameInput").value=mat_customerName;
+  mat_objectAddress=localStorage.getItem("objectAddress")||""; document.getElementById("matObjectAddressInput").value=mat_objectAddress;
+}
+function mat_saveCategories(){localStorage.setItem("materials_categories",JSON.stringify(mat_categories));}
+function mat_getAllMaterials(){let a=[];mat_categories.forEach(c=>{a=a.concat(c.materials);});return a;}
+window.addEventListener('load',()=>{ mat_initMainTableSortable(); });
+
+let _matToastTimer = null;
+function mat_showToast(m, d = 700){ const t = document.getElementById('matToast'); if (!t) return; t.textContent = m; t.classList.add('show'); clearTimeout(_matToastTimer); _matToastTimer = setTimeout(()=>{ t.classList.remove('show'); }, d); }
+function mat_openSettings(){ const m = document.getElementById("matSettings"); m.style.display="flex"; m.scrollTop = 0; }
+function mat_closeSettings(){document.getElementById("matSettings").style.display="none";}
+function mat_openDatabase(){ const m = document.getElementById("matDatabase"); m.style.display="flex"; m.scrollTop = 0; mat_renderDB(); }
+function mat_saveDatabase(){ mat_syncDBFromDOM(); mat_saveCategories(); document.getElementById("matDatabase").style.display="none"; mat_updateAllRows(); mat_showToast('База сохранена'); }
+function mat_renderDB(){
+  mat_dbSortableInstances.forEach(i=>i.destroy());mat_dbSortableInstances=[];
+  if(mat_categoriesSortableInstance){mat_categoriesSortableInstance.destroy();mat_categoriesSortableInstance=null;}
+  const container=document.getElementById("matDbCategoriesContainer"); if(!container)return;
+  container.innerHTML="";
+  mat_categories.forEach(cat=>{
+    const catDiv=document.createElement("div");
+    catDiv.className="category-spoiler";catDiv.dataset.catId=cat.id;
+    catDiv.innerHTML='<div class="category-header"><span class="category-drag-handle">≡</span><span class="category-arrow">▶</span><span class="category-name" onclick="mat_toggleCategory(this.closest(\'.category-spoiler\'))">'+cat.name+'</span><span class="category-count">'+cat.materials.length+'</span><button class="category-delete-btn" onclick="mat_deleteCategory(\''+cat.id+'\', event)">🗑</button></div><div class="category-content"><div class="table-container"><table class="db-cat-table"><thead><tr><th class="db-num">№</th><th class="db-drag">⇅</th><th class="db-name">Название</th><th class="db-unit">Ед.</th><th class="db-price">Цена</th><th class="db-del"></th></tr></thead><tbody id="matCatBody_'+cat.id+'"></tbody></table></div></div>';
+    container.appendChild(catDiv);
+    const tbody=catDiv.querySelector('#matCatBody_'+cat.id);
+    cat.materials.forEach((m,idx)=>{
+      const r=tbody.insertRow(); r.dataset.materialId=m.id;
+      r.innerHTML='<td class="db-num">'+(idx+1)+'</td><td class="db-drag">≡</td><td class="db-name"><input value="'+m.name+'"></td><td class="db-unit"><input value="'+m.unit+'"></td><td class="db-price"><input type="number" step="0.1" value="'+m.price+'"></td><td class="db-del"><button class="remove" onclick="mat_deleteMaterial(\''+cat.id+'\',\''+m.id+'\')">×</button></td>';
+      r.querySelectorAll("input").forEach(inp=>{ inp.oninput=()=>{ m.name=r.cells[2].children[0].value; m.unit=r.cells[3].children[0].value; m.price=Number(r.cells[4].children[0].value); mat_saveCategories(); }; });
+    });
+    if(typeof Sortable!=='undefined'){
+      const sortable=Sortable.create(tbody,{
+        group:'mat_materials', handle:'.db-drag',animation:150,
+        ghostClass:'sortable-ghost',chosenClass:'sortable-chosen',
+        delay:50,delayOnTouchOnly:true,touchStartThreshold:3,
+        onEnd:function(evt){ const fromId=evt.from.closest('.category-spoiler').dataset.catId; const toId=evt.to.closest('.category-spoiler').dataset.catId; setTimeout(()=>{ mat_syncDBFromDOM(); if(fromId!==toId){ const toCat=mat_categories.find(c=>c.id===toId); if(toCat)mat_showToast('Перемещено в «'+toCat.name+'»'); } },0); }
+      });
+      mat_dbSortableInstances.push(sortable);
+    }
+  });
+  mat_initCategoriesSortable();
+}
+function mat_syncDBFromDOM(){
+  const all = mat_getAllMaterials(); const byId = new Map(all.map(m => [m.id, m]));
+  const newCats = [];
+  document.querySelectorAll('#matDbCategoriesContainer .category-spoiler').forEach(div=>{
+    const cat = mat_categories.find(c=>c.id===div.dataset.catId); if(!cat) return;
+    const mats = [];
+    div.querySelectorAll('tbody tr').forEach((tr,i)=>{ const m = byId.get(tr.dataset.materialId); if(m) mats.push(m); const n = tr.querySelector('.db-num'); if(n) n.textContent = i+1; });
+    cat.materials = mats; const cnt = div.querySelector('.category-count'); if(cnt) cnt.textContent = mats.length;
+    newCats.push(cat);
+  });
+  mat_categories.forEach(c => { if (!newCats.some(nc => nc.id === c.id)) newCats.push(c); });
+  mat_categories = newCats; mat_saveCategories(); mat_updateAllRows();
+}
+function mat_initCategoriesSortable(){
+  if(typeof Sortable==='undefined')return;
+  const container=document.getElementById("matDbCategoriesContainer"); if(!container)return;
+  mat_categoriesSortableInstance=Sortable.create(container,{
+    handle:'.category-drag-handle',animation:200,
+    ghostClass:'sortable-ghost',chosenClass:'sortable-chosen',
+    delay:50,delayOnTouchOnly:true,touchStartThreshold:3,
+    onEnd:function(){ const divs=container.querySelectorAll('.category-spoiler'); const order=[];divs.forEach(d=>order.push(d.dataset.catId)); mat_categories=order.map(id=>mat_categories.find(c=>c.id===id)).filter(Boolean); mat_saveCategories(); mat_showToast("Порядок рубрик изменён"); }
+  });
+}
+function mat_toggleCategory(catDiv){ if(!catDiv)return; catDiv.classList.toggle("open"); const a=catDiv.querySelector(".category-arrow"); a.textContent=catDiv.classList.contains("open")?"▼":"▶"; }
+function mat_addCategory(){ const name=prompt("Введите название новой рубрики:"); if(!name||!name.trim())return; mat_categories.push({id:mat_getId(),name:name.trim(),materials:[]}); mat_saveCategories();mat_renderDB();mat_showToast("Рубрика добавлена"); }
+function mat_deleteCategory(catId,event){
+  if(event){event.stopPropagation();event.preventDefault();}
+  const cat=mat_categories.find(c=>c.id===catId); if(!cat)return;
+  if(mat_categories.length===1){alert("Нельзя удалить единственную рубрику!");return;}
+  let msg='Удалить рубрику "'+cat.name+'"?';
+  if(cat.materials.length>0){msg+='\n\n⚠️ ВНИМАНИЕ: в этой рубрике '+cat.materials.length+' материалов.\nВсе они будут УДАЛЕНЫ!';}
+  msg+='\n\nПродолжить?';
+  if(!confirm(msg))return;
+  mat_categories=mat_categories.filter(c=>c.id!==catId);
+  mat_saveCategories();mat_renderDB();mat_updateAllRows(); mat_showToast('Рубрика "'+cat.name+'" удалена');
+}
+function mat_deleteMaterial(catId,matId){ if(!confirm('Удалить этот материал из базы?'))return; const cat=mat_categories.find(c=>c.id===catId); if(!cat)return; cat.materials=cat.materials.filter(m=>m.id!==matId); mat_saveCategories();mat_renderDB();mat_updateAllRows(); }
+function mat_openAddMaterialModal(){
+  const s=document.getElementById("matNewMaterialCategory"); s.innerHTML="";
+  mat_categories.forEach(c=>{const o=document.createElement("option");o.value=c.id;o.textContent=c.name;s.appendChild(o);});
+  document.getElementById("matNewMaterialName").value=""; document.getElementById("matNewMaterialUnit").value="шт"; document.getElementById("matNewMaterialPrice").value="0";
+  const m = document.getElementById("matAddMaterialModal"); m.style.display="flex"; m.scrollTop = 0;
+}
+function mat_closeAddMaterialModal(){document.getElementById("matAddMaterialModal").style.display="none";}
+function mat_saveNewMaterial(){
+  const catId=document.getElementById("matNewMaterialCategory").value;
+  const name=document.getElementById("matNewMaterialName").value.trim();
+  const unit=document.getElementById("matNewMaterialUnit").value.trim()||"шт";
+  const price=Number(document.getElementById("matNewMaterialPrice").value)||0;
+  if(!name){alert("Введите название материала!");return;}
+  const cat=mat_categories.find(c=>c.id===catId); if(!cat)return;
+  cat.materials.push({id:mat_getId(),name:name,unit:unit,price:price});
+  mat_saveCategories();mat_closeAddMaterialModal();mat_renderDB();mat_showToast("Материал добавлен в базу");
+}
+function mat_openSavePicker(blob,filename){ mat_pendingSave={blob:blob,filename:filename}; document.getElementById("matSavePickerHint").textContent='Файл: '+filename; const m = document.getElementById("matSavePickerModal"); m.style.display="flex"; m.scrollTop = 0; }
+function mat_closeSavePicker(){ document.getElementById("matSavePickerModal").style.display="none"; mat_pendingSave=null; }
+function mat_downloadBlob(blob,filename){ const url=URL.createObjectURL(blob); const a=document.createElement('a');a.href=url;a.download=filename; document.body.appendChild(a);a.click();document.body.removeChild(a); URL.revokeObjectURL(url); }
+async function mat_saveViaFolder(){
+  if(!mat_pendingSave)return;
+  if(window.showSaveFilePicker){
+    try{
+      const isJson=mat_pendingSave.filename.endsWith('.json');
+      const handle=await showSaveFilePicker({ suggestedName:mat_pendingSave.filename, types:[{ description:isJson?'Данные сметы (JSON)':'Документ PDF', accept:isJson?{'application/json':['.json']}:{'application/pdf':['.pdf']} }] });
+      const w=await handle.createWritable(); await w.write(mat_pendingSave.blob); await w.close();
+      mat_closeSavePicker(); mat_showToast('Файл сохранён в выбранную папку');
+    }catch(err){ if(err&&err.name==='AbortError'){mat_closeSavePicker();return;} mat_showToast('Не удалось сохранить в папку: '+err.message); }
+  }else{ mat_showToast('Браузер не поддерживает выбор папки.'); }
+}
+async function mat_saveViaShare(){
+  if(!mat_pendingSave)return;
+  const blob=mat_pendingSave.blob,filename=mat_pendingSave.filename;
+  try{ const file=new File([blob],filename,{type:blob.type}); if(navigator.share){ await navigator.share({files:[file],title:'Смета материалов'}); mat_closeSavePicker(); mat_showToast('Отправлено / сохранено'); }else{ mat_showToast('Система не поддерживает отправку файлов'); } }
+  catch(err){ if(err&&err.name==='AbortError'){mat_showToast('Отменено');return;} mat_showToast('Ошибка: '+err.message); }
+}
+function mat_saveViaDownload(){ if(!mat_pendingSave)return; mat_downloadBlob(mat_pendingSave.blob,mat_pendingSave.filename); mat_closeSavePicker(); mat_showToast('Файл сохранён в «Загрузки»'); }
+
+async function mat_exportDB(){
+  const data={version:2,categories:mat_categories,markup:mat_markup,deliveryPrice:mat_deliveryPrice,customerName:mat_customerName,objectAddress:mat_objectAddress,exportDate:new Date().toISOString()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const filename='база материалов ' + todayStr() + '.json';
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await showSaveFilePicker({ suggestedName: filename, types: [{ description: 'База JSON', accept: {'application/json':['.json']} }] });
+      const w = await handle.createWritable(); await w.write(blob); await w.close();
+      mat_showToast('Файл сохранён: ' + filename);
+      return;
+    } catch(err) { if (err && err.name === 'AbortError') return; }
+  }
+  mat_downloadBlob(blob, filename);
+  mat_showToast('Файл сохранён в «Загрузки»');
+}
+function mat_importDBTrigger(){document.getElementById("matImportFileInput").click();}
+function mat_handleFileImport(event){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+      if(data.version===2&&data.categories){
+        if(confirm('Все текущие данные базы будут заменены. Продолжить?')){
+          mat_categories=data.categories;
+          mat_categories.forEach(c=>{if(!c.id)c.id=mat_getId();c.materials.forEach(m=>{if(!m.id)m.id=mat_getId();});});
+          if(data.markup!==undefined){mat_markup=data.markup;document.getElementById("matMarkupInput").value=mat_markup;localStorage.setItem("markup",mat_markup);}
+          if(data.deliveryPrice!==undefined){mat_deliveryPrice=data.deliveryPrice;document.getElementById("matDeliveryInput").value=mat_deliveryPrice;localStorage.setItem("deliveryPrice",mat_deliveryPrice);}
+          if(data.customerName!==undefined){mat_customerName=data.customerName;document.getElementById("matCustomerNameInput").value=mat_customerName;localStorage.setItem("customerName",mat_customerName);}
+          if(data.objectAddress!==undefined){mat_objectAddress=data.objectAddress;document.getElementById("matObjectAddressInput").value=mat_objectAddress;localStorage.setItem("objectAddress",mat_objectAddress);}
+          mat_saveCategories();mat_renderDB();mat_updateAllRows();mat_showToast('База загружена');
+        }
+      }else if(data.materials&&Array.isArray(data.materials)){
+        if(confirm('Файл старого формата. Импортировать в категорию "Импорт"?')){
+          const imp=data.materials;imp.forEach(m=>{if(!m.id)m.id=mat_getId();});
+          mat_categories.push({id:mat_getId(),name:"Импорт",materials:imp});
+          mat_saveCategories();mat_renderDB();mat_updateAllRows();mat_showToast('Импортировано в категорию "Импорт"');
+        }
+      }else{alert('Ошибка: Неверный формат файла.');}
+    }catch(err){alert('Ошибка: '+err.message);}
+  };
+  reader.readAsText(file);event.target.value='';
+}
+function mat_openMaterialPicker(targetRow){
+  if(mat_getAllMaterials().length===0){mat_showToast('База пуста! Добавьте материалы');return;}
+  mat_pickerTargetRow=targetRow||null; mat_renderPickerModal();
+  const m = document.getElementById("matMaterialPicker"); m.style.display="flex"; m.scrollTop = 0;
+}
+function mat_closeMaterialPicker(){document.getElementById("matMaterialPicker").style.display="none";mat_pickerTargetRow=null;}
+function mat_renderPickerModal(){
+  const container=document.getElementById("matPickerCategoriesContainer"); container.innerHTML="";
+  const mult=1+mat_markup/100;
+  mat_categories.forEach(cat=>{
+    if(cat.materials.length===0)return;
+    const catDiv=document.createElement("div"); catDiv.className="category-spoiler";catDiv.dataset.catId=cat.id;
+    let cards='';
+    cat.materials.forEach(m=>{ const sell=(m.price*mult).toFixed(2); const priceText=m.price>0?sell+' ₽/'+m.unit:'Бесплатно'; cards+='<div class="material-card" onclick="mat_pickMaterial(\''+m.id+'\')"><div class="material-card-info"><div class="material-card-name">'+m.name+'</div><div class="material-card-meta">'+m.unit+'</div></div><div class="material-card-price">'+priceText+'</div><div class="material-card-plus">+</div></div>'; });
+    catDiv.innerHTML='<div class="category-header" onclick="mat_toggleCategory(this.closest(\'.category-spoiler\'))"><span class="category-arrow">▶</span><span class="category-name">'+cat.name+'</span><span class="category-count">'+cat.materials.length+'</span></div><div class="category-content">'+cards+'</div>';
+    container.appendChild(catDiv);
+  });
+}
+function mat_pickMaterial(materialId){ if(mat_pickerTargetRow){mat_pickerTargetRow.dataset.materialId=materialId;mat_updateRow(mat_pickerTargetRow);} else{mat_addRowWithMaterial(materialId);} const m=mat_getAllMaterials().find(x=>x.id===materialId); mat_closeMaterialPicker(); if(m)mat_showToast('Добавлено: '+m.name); }
+let mat_mainSortableInstance=null;
+function mat_initMainTableSortable(){
+  if(typeof Sortable==='undefined')return;
+  const el=document.getElementById("matMainTableBody"); if(!el)return;
+  mat_mainSortableInstance=Sortable.create(el,{ handle:'.drag-handle',animation:150, ghostClass:'sortable-ghost',chosenClass:'sortable-chosen',dragClass:'sortable-drag', delay:50,delayOnTouchOnly:true,touchStartThreshold:3, onEnd:function(){mat_renumberMainTable();} });
+}
+function mat_renumberMainTable(){ document.querySelectorAll("#matMainTableBody tr").forEach((r,i)=>{ const n=r.querySelector(".num-col");if(n)n.textContent=i+1; }); }
+function mat_addRowWithMaterial(materialId){
+  const tb=document.getElementById("matMainTableBody"); const r=tb.insertRow(); const cnt=tb.querySelectorAll("tr").length;
+  r.dataset.materialId=materialId;
+  r.innerHTML='<td class="num-col">'+cnt+'</td><td class="drag-handle">≡</td><td class="name-cell"></td><td class="unit"></td><td><input type="number" step="0.01" value="1" style="min-width:50px;max-width:70px;"></td><td class="price">0</td><td class="sum">0</td><td class="remove-col"><button class="remove">×</button></td>';
+  r.querySelector(".name-cell").onclick=function(){mat_openMaterialPicker(r);};
+  r.cells[4].children[0].oninput=function(){mat_updateRow(r);};
+  r.querySelector(".remove").onclick=function(){r.remove();mat_renumberMainTable();mat_recalcAll();};
+  mat_updateRow(r);
+}
+function mat_updateRow(r,skipRecalc){
+  const allMats=mat_getAllMaterials(); const m=allMats.find(x=>x.id===r.dataset.materialId); const nameCell=r.querySelector(".name-cell");
+  if(!m){ nameCell.textContent="— не найден —"; r.querySelector(".unit").textContent="-"; r.querySelector(".price").textContent="0"; r.querySelector(".sum").textContent="0"; r.dataset.profit="0"; r.style.background="rgba(255,80,80,.12)"; if(!skipRecalc)mat_recalcAll(); return; }
+  r.style.background="";
+  const qty=Number(r.cells[4].children[0].value)||0; const basePrice=m.price;
+  const sellPrice=basePrice*(1+mat_markup/100); const sellSum=sellPrice*qty; const profit=(sellPrice-basePrice)*qty;
+  r.dataset.profit=profit; nameCell.textContent=m.name; r.querySelector(".unit").textContent=m.unit;
+  r.querySelector(".price").textContent=sellPrice.toFixed(2); r.querySelector(".sum").textContent=sellSum.toFixed(2);
+  if(!skipRecalc)mat_recalcAll();
+}
+function mat_updateAllRows(){ document.querySelectorAll("#matMainTableBody tr").forEach(r=>mat_updateRow(r,true)); mat_recalcAll(); }
+function mat_recalcAll(){
+  let total=0,totalProfit=0;
+  document.querySelectorAll("#matMainTableBody tr").forEach(r=>{ total+=Number(r.querySelector(".sum").textContent)||0; totalProfit+=Number(r.dataset.profit)||0; });
+  total+=mat_deliveryPrice;
+  document.getElementById("matGrandTotal").textContent=total.toFixed(2);
+  document.getElementById("matProfitTotal").textContent=totalProfit.toFixed(2);
+}
+function mat_saveEstimate(){
+  const rows=[];
+  document.querySelectorAll("#matMainTableBody tr").forEach(row=>{ const materialId=row.dataset.materialId||""; const qty=row.cells[4].querySelector("input").value; if(materialId&&qty)rows.push({materialId:materialId,quantity:qty}); });
+  if(rows.length===0){mat_showToast('Смета пуста!');return;}
+  const data={type:'estimate',customerName:mat_customerName,objectAddress:mat_objectAddress,markup:mat_markup,deliveryPrice:mat_deliveryPrice,rows:rows,saveDate:new Date().toISOString()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const cname = sanitizeName(mat_customerName);
+  const markStr = (mat_markup !== '' && mat_markup !== null && !isNaN(Number(mat_markup))) ? (Number(mat_markup) + '%') : '';
+  const filename = 'смета материалов' + (cname ? ' ' + cname : '') + (markStr ? ' ' + markStr : '') + ' ' + todayStr() + '.json';
+  mat_openSavePicker(blob, filename);
+}
+function mat_loadEstimateTrigger(){document.getElementById("matImportEstimateInput").click();}
+function mat_handleEstimateImport(event){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+      if(data.type!=='estimate'||!data.rows||!Array.isArray(data.rows)){alert('Ошибка: Неверный формат.');return;}
+      if(!confirm('Текущая смета будет заменена. Продолжить?'))return;
+      if(data.customerName!==undefined){mat_customerName=data.customerName;document.getElementById("matCustomerNameInput").value=mat_customerName;localStorage.setItem("customerName",mat_customerName);}
+      if(data.objectAddress!==undefined){mat_objectAddress=data.objectAddress;document.getElementById("matObjectAddressInput").value=mat_objectAddress;localStorage.setItem("objectAddress",mat_objectAddress);}
+      if(data.markup!==undefined){mat_markup=data.markup;document.getElementById("matMarkupInput").value=mat_markup;localStorage.setItem("markup",mat_markup);}
+      if(data.deliveryPrice!==undefined){mat_deliveryPrice=data.deliveryPrice;document.getElementById("matDeliveryInput").value=mat_deliveryPrice;localStorage.setItem("deliveryPrice",mat_deliveryPrice);}
+      const tbody=document.getElementById("matMainTableBody");tbody.innerHTML="";
+      data.rows.forEach((rowData,idx)=>{
+        const r=tbody.insertRow();
+        r.dataset.materialId=rowData.materialId;
+        r.innerHTML='<td class="num-col">'+(idx+1)+'</td><td class="drag-handle">≡</td><td class="name-cell"></td><td class="unit"></td><td><input type="number" step="0.01" value="'+rowData.quantity+'" style="min-width:50px;max-width:70px;"></td><td class="price">0</td><td class="sum">0</td><td class="remove-col"><button class="remove">×</button></td>';
+        r.querySelector(".name-cell").onclick=function(){mat_openMaterialPicker(r);};
+        r.cells[4].children[0].oninput=function(){mat_updateRow(r);};
+        r.querySelector(".remove").onclick=function(){r.remove();mat_renumberMainTable();mat_recalcAll();};
+      });
+      mat_updateAllRows();mat_showToast('Смета загружена');
+    }catch(err){alert('Ошибка: '+err.message);}
+  };
+  reader.readAsText(file);event.target.value='';
+}
+document.getElementById("matMarkupInput").oninput=()=>{ mat_markup=Number(document.getElementById("matMarkupInput").value); localStorage.setItem("markup",mat_markup);mat_updateAllRows(); };
+document.getElementById("matDeliveryInput").oninput=()=>{ mat_deliveryPrice=Number(document.getElementById("matDeliveryInput").value); localStorage.setItem("deliveryPrice",mat_deliveryPrice);mat_recalcAll(); };
+document.getElementById("matCustomerNameInput").oninput=()=>{ mat_customerName=document.getElementById("matCustomerNameInput").value; localStorage.setItem("customerName",mat_customerName); };
+document.getElementById("matObjectAddressInput").oninput=()=>{ mat_objectAddress=document.getElementById("matObjectAddressInput").value; localStorage.setItem("objectAddress",mat_objectAddress); };
+
+function mat_preparePDFData(mode){
+  const pdfTbody=document.getElementById("matPdfTableBody");
+  const pdfTitle=document.getElementById("matPdfTitle");
+  const pdfObject=document.getElementById("matPdfObject");
+  const pdfCustomer=document.getElementById("matPdfCustomer");
+  const pdfNote=document.getElementById("matPdfNote");
+  const totalBlock=document.getElementById("matPdfTotalBlock");
+  const ths=document.querySelectorAll("#matPdfTable thead th"); const priceTh=ths[4], sumTh=ths[5];
+  pdfTbody.innerHTML=""; pdfObject.style.display="none"; pdfCustomer.style.display="none"; pdfNote.style.display="none"; totalBlock.style.display="none";
+  if(priceTh) priceTh.style.display=""; if(sumTh) sumTh.style.display="";
+  if(mode==='client'){
+    pdfTitle.textContent="Смета материалов";
+    if(mat_objectAddress){pdfObject.textContent="Объект: "+mat_objectAddress;pdfObject.style.display="block";}
+    if(mat_customerName){pdfCustomer.textContent="Заказчик: "+mat_customerName;pdfCustomer.style.display="block";}
+    totalBlock.style.display="block"; pdfNote.style.display="block";
+  } else if(mode==='list'){
+    pdfTitle.textContent="Список материалов";
+    if(priceTh) priceTh.style.display="none"; if(sumTh) sumTh.style.display="none";
+  }
+  let rowNum=1;
+  document.querySelectorAll("#matMainTableBody tr").forEach(row=>{
+    const name=row.querySelector(".name-cell").textContent;
+    const unit=row.cells[3].textContent;
+    const qty=row.cells[4].querySelector("input").value;
+    const price=row.cells[5].textContent;
+    const sum=row.cells[6].textContent;
+    const nr=pdfTbody.insertRow();
+    let html=`<td class="num-col">${rowNum}</td><td style="text-align: left;">${name}</td><td class="unit-col">${unit}</td><td class="qty-col">${qty}</td>`;
+    if(mode==='client') html+=`<td class="price-col">${price}</td><td class="sum-col">${sum}</td>`;
+    nr.innerHTML=html; rowNum++;
+  });
+  document.getElementById("matPdfDate").textContent=new Date().toLocaleDateString('ru-RU');
+  document.getElementById("matPdfGrandTotal").textContent=document.getElementById("matGrandTotal").textContent;
+}
+function mat_closePdfPreview(){ document.getElementById("matPdfContainer").style.display="none"; }
+function mat_getPdfOptions(filename){
+  return { margin:[8,8,10,8], filename:filename, image:{type:'jpeg', quality:0.98},
+    html2canvas:{scale:2, useCORS:true, logging:false, letterRendering:true, scrollY:0, windowWidth:document.documentElement.clientWidth},
+    jsPDF:{unit:'mm', format:'a4', orientation:'portrait'},
+    pagebreak:{mode:['css','legacy'], before:[], after:[], avoid:['.pdf-total-wrapper','.pdf-total','.pdf-header']} };
+}
+async function mat_generatePDF(mode, filename){
+  if(typeof html2pdf==='undefined'){mat_showToast('Ошибка: PDF библиотека не загружена');return;}
+  mat_preparePDFData(mode);
+  document.getElementById("matPdfContainer").style.display="block";
+  document.getElementById("matClosePdfPreview").style.display="block";
+  document.fonts.ready.then(()=>{ setTimeout(()=>{ const element=document.getElementById("matPdfContent");
+    html2pdf().set(mat_getPdfOptions(filename)).from(element).output('blob').then(blob=>{ mat_closePdfPreview(); mat_openSavePicker(blob, filename); }).catch(err=>{ console.error(err); mat_showToast('Ошибка PDF'); mat_closePdfPreview(); });
+  },300); });
+}
+function mat_savePDFClient(){ const cname = sanitizeName(mat_customerName); mat_generatePDF('client','смета материалов' + (cname ? ' ' + cname : '') + ' ' + todayStr() + '.pdf'); }
+function mat_savePDFList(){ mat_generatePDF('list','список материалов ' + todayStr() + '.pdf'); }
+function mat_openSendModal(){ const m = document.getElementById("matSendModal"); m.style.display="flex"; m.scrollTop = 0; }
+function mat_closeSendModal(){document.getElementById("matSendModal").style.display="none";}
+async function mat_sharePDF(mode){
+  if(typeof html2pdf==='undefined'){mat_showToast('Ошибка: PDF библиотека не загружена');return;}
+  mat_closeSendModal();
+  const cname = sanitizeName(mat_customerName);
+  const filename = 'список материалов' + (cname ? ' ' + cname : '') + ' ' + todayStr() + '.pdf';
+  mat_preparePDFData(mode);
+  document.getElementById("matPdfContainer").style.display="block";
+  document.getElementById("matClosePdfPreview").style.display="block";
+  mat_showToast('Формирую PDF...', 700);
+  document.fonts.ready.then(()=>{ setTimeout(()=>{ const element=document.getElementById("matPdfContent");
+    html2pdf().set(mat_getPdfOptions(filename)).from(element).output('blob').then(async(blob)=>{
+      mat_closePdfPreview();
+      try{ const file=new File([blob],filename,{type:'application/pdf'});
+        if(navigator.share){ await navigator.share({files:[file],title:'Смета материалов'}); mat_showToast('Отправлено'); }
+        else{ mat_downloadBlob(blob,filename); mat_showToast('Файл сохранён в загрузки'); }
+      }catch(err){ if(err&&err.name==='AbortError'){mat_showToast('Отправка отменена');} else{mat_downloadBlob(blob,filename);mat_showToast('Файл сохранён');} }
+    }).catch(err=>{ console.error(err); mat_showToast('Ошибка PDF'); mat_closePdfPreview(); });
+  },300); });
+}
+window.addEventListener('load', mat_loadData);
+</script>
+
+<script>
+/* ═══════════ PWA: SERVICE WORKER + УСТАНОВКА ═══════════ */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => console.log('SW зарегистрирован:', reg.scope))
+      .catch(err => console.warn('SW ошибка:', err));
+  });
+}
+
+let deferredPrompt = null;
+const installBtn = document.getElementById('installAppBtn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (installBtn) installBtn.classList.add('show');
+});
+
+if (installBtn) {
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    try {
+      await deferredPrompt.userChoice;
+    } catch(e){}
+    deferredPrompt = null;
+    installBtn.classList.remove('show');
+  });
+}
+
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  if (installBtn) installBtn.classList.remove('show');
+  console.log('Приложение установлено');
+});
+</script>
+
+<script>
+/* ═══════════ ОБОЛОЧКА ═══════════ */
+(function(){
+  const d = new Date();
+  const ds = d.toLocaleDateString('ru-RU', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  document.getElementById('today').textContent = ds.charAt(0).toUpperCase() + ds.slice(1);
+  const APP_VERSION = '1.81.0';
+  document.getElementById('appVersion').textContent = 'version ' + APP_VERSION;
+  const box = document.getElementById('particles');
+  const N = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 10;
+  for (let i = 0; i < N; i++) {
+    const p = document.createElement('span');
+    const sz = (1.5 + Math.random() * 2).toFixed(1);
+    p.style.cssText = `left:${(Math.random()*100).toFixed(2)}%; width:${sz}px; height:${sz}px; --dur:${(15+Math.random()*14).toFixed(1)}s; --delay:${(-Math.random()*26).toFixed(1)}s; --dx:${(Math.random()*60-30).toFixed(0)}px; --op:${(0.12+Math.random()*0.25).toFixed(2)};`;
+    box.appendChild(p);
+  }
+  function show(id){
+    document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+    if (id === 'screen-home') { document.body.classList.remove('no-bg'); document.documentElement.style.overflow = 'hidden'; document.body.style.overflow = 'hidden'; }
+    else { document.body.classList.add('no-bg'); document.documentElement.style.overflow = ''; document.body.style.overflow = ''; }
+    window.scrollTo({top:0});
+  }
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.overflow = 'hidden';
+  function spawnRing(btn){ const r = document.createElement('span'); r.className = 'pulse-ring'; btn.appendChild(r); setTimeout(() => r.remove(), 650); }
+  document.querySelectorAll('.big-btn').forEach(btn => {
+    const target = 'screen-' + btn.dataset.target;
+    btn.addEventListener('pointerdown', () => btn.classList.add('is-pressed'));
+    btn.addEventListener('pointerleave', () => { if (!btn.classList.contains('firing')) btn.classList.remove('is-pressed'); });
+    btn.addEventListener('click', () => { btn.classList.add('is-pressed', 'firing'); spawnRing(btn); setTimeout(() => show(target), 250); setTimeout(() => btn.classList.remove('is-pressed','firing'), 900); });
+  });
+  document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => show('screen-home')));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') show('screen-home'); });
+})();
+</script>
+</body>
+</html>
