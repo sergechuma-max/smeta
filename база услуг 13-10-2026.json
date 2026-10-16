@@ -1,0 +1,737 @@
+{
+  "categories": [
+    {
+      "id": "cat_1",
+      "name": "Штробление"
+    },
+    {
+      "id": "cat_2",
+      "name": "Монтаж"
+    },
+    {
+      "id": "_zyf9on56l",
+      "name": "Чистовые работы"
+    },
+    {
+      "id": "_syxx7sh7y",
+      "name": "Щит"
+    },
+    {
+      "id": "cat_3",
+      "name": "Диагностика и поиск неисправности"
+    },
+    {
+      "id": "_plmkyoxf5",
+      "name": "Прочие услуги"
+    },
+    {
+      "id": "_1w275k6z8",
+      "name": "Демонтаж"
+    }
+  ],
+  "services": [
+    {
+      "id": "_30lgvel95",
+      "name": "Штробление бетон 20х30",
+      "unit": "м.п.",
+      "price": 700,
+      "comment": "",
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_8i82fmyi6",
+      "name": "Штробление бетон 30х30",
+      "unit": "м.п.",
+      "price": 750,
+      "comment": "",
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_qefis2m4s",
+      "name": "Штробление бетон монолит 30х30",
+      "unit": "м.п.",
+      "price": 950,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_bq1cpig3s",
+      "name": "Штробление бетон 50х50",
+      "unit": "м.п.",
+      "price": 2500,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_jun4z4f6b",
+      "name": "Штробление бетон панелька 50х50",
+      "unit": "м.п.",
+      "price": 3500,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_pxi611rfz",
+      "name": "Штробление бетон монолит 50х50",
+      "unit": "м.п.",
+      "price": 4000,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_hekceyhks",
+      "name": "Штробление газоблок 20х30",
+      "unit": "м.п.",
+      "price": 550,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_302oahlcm",
+      "name": "Штробление газоблок 30х30",
+      "unit": "м.п.",
+      "price": 600,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_tzrhzqwl9",
+      "name": "Штробление газоблок 50х50",
+      "unit": "м.п.",
+      "price": 800,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_wieyas7jb",
+      "name": "Сверление подрозетника 68х50 бетон",
+      "unit": "шт",
+      "price": 750,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_wphboagql",
+      "name": "Сверление подрозетника 68х50 бетон монолит",
+      "unit": "шт",
+      "price": 900,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_qsfy586ou",
+      "name": "Сверление подрозетника 68х70 бетон",
+      "unit": "шт",
+      "price": 900,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_lcqg1cyvt",
+      "name": "Сверление подрозетника 68х70 бетон монолит",
+      "unit": "шт",
+      "price": 1200,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_3vt2hbi4i",
+      "name": "Сверление подрозетника 68х50 газоблок",
+      "unit": "шт",
+      "price": 550,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_ien7p7ak9",
+      "name": "Сверление подрозетника 68х70 газоблок",
+      "unit": "шт",
+      "price": 600,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_s82gjrpa1",
+      "name": "Сверление подрозетника 68х50 кирпич",
+      "unit": "шт",
+      "price": 550,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_r6c5w5qz0",
+      "name": "Сверление подрозетника 68х70 кирпич",
+      "unit": "шт",
+      "price": 600,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_t2ngocw7j",
+      "name": "Сверление подрозетника Копос 70х80 бетон",
+      "unit": "шт",
+      "price": 1000,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_eqjf05v40",
+      "name": "Сверление подрозетника Копос 70х80 бетон монолит",
+      "unit": "шт",
+      "price": 1400,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_2tt84rq8a",
+      "name": "Сверление подрозетника Копос 70х80 в мягком",
+      "unit": "шт",
+      "price": 800,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_smks4shcz",
+      "name": "Штробление в угол бетон",
+      "unit": "шт",
+      "price": 500,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_foc7lgaib",
+      "name": "Штробление в угол газоблок",
+      "unit": "шт",
+      "price": 250,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_ys4o5rj9f",
+      "name": "Штробление в угол кирпич",
+      "unit": "шт",
+      "price": 300,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_iyt1z4tcw",
+      "name": "Сверление отверстия 52 мм бетон 400 мм",
+      "unit": "шт",
+      "price": 3000,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_br3v5hvh5",
+      "name": "Сверление отверстия 52 мм бетон монотил 400 мм",
+      "unit": "шт",
+      "price": 5000,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_5xlatp5x7",
+      "name": "Сверление отверстия 52 мм газоблок 400 мм",
+      "unit": "шт",
+      "price": 1500,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_6rtmbbmy9",
+      "name": "Сверление отверстия 52 мм кирпич 400 мм",
+      "unit": "шт",
+      "price": 2000,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_ualynmhtr",
+      "name": "Проходки через стены d20 по бетону до 150 мм",
+      "unit": "шт",
+      "price": 600,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_tr1kx4und",
+      "name": "Проходки через стены d20 по бетону до 300 мм",
+      "unit": "шт",
+      "price": 1500,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_g4bfkfln7",
+      "name": "Проходки через стены d20 по мягкому",
+      "unit": "шт",
+      "price": 350,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_1cj6wbu6q",
+      "name": "Штроба под щит газоблок 30х200х1500",
+      "unit": "шт",
+      "price": 3000,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_syzq1l5pz",
+      "name": "Штроба под щит газоблок 50х200х1500",
+      "unit": "шт",
+      "price": 4500,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_v4ov0jaql",
+      "name": "Штроба под щит газоблок 30х100х1500",
+      "unit": "шт",
+      "price": 1500,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_gc1a5ksvq",
+      "name": "Штроба под щит газоблок 50х100х1500",
+      "unit": "шт",
+      "price": 2500,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_6g58ch6th",
+      "name": "Штроба под щит бетон 30х200х1500",
+      "unit": "шт",
+      "price": 6500,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_2fd8ocytm",
+      "name": "Штроба под щит бетон 50х200х1500",
+      "unit": "шт",
+      "price": 9000,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_gdveqdda5",
+      "name": "Штроба под щит бетон 30х100х1500",
+      "unit": "шт",
+      "price": 3250,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_f3l1znwqe",
+      "name": "Штроба под щит бетон 50х100х1500",
+      "unit": "шт",
+      "price": 4500,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_gkv0ig0y5",
+      "name": "Штроба под щит бетон монолит 30х200х1500",
+      "unit": "шт",
+      "price": 9000,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_8cmlbbbka",
+      "name": "Штроба под щит бетон монолит 30х100х1500",
+      "unit": "шт",
+      "price": 4500,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_vljja5mf1",
+      "name": "Штроба под щит бетон монолит 50х200х1500",
+      "unit": "шт",
+      "price": 15000,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_8r3xk50ek",
+      "name": "Демонтаж розетки",
+      "unit": "шт",
+      "price": 150,
+      "categoryId": "_1w275k6z8"
+    },
+    {
+      "id": "_uwcafeekx",
+      "name": "Демонтаж выключателя",
+      "unit": "шт",
+      "price": 150,
+      "categoryId": "_1w275k6z8"
+    },
+    {
+      "id": "_a3wuznt88",
+      "name": "Демонтаж старой электропроводки",
+      "unit": "шт",
+      "price": 5000,
+      "categoryId": "_1w275k6z8"
+    },
+    {
+      "id": "_c4vzkzznr",
+      "name": "Демонтаж электрощита до 24 мод",
+      "unit": "шт",
+      "price": 500,
+      "categoryId": "_1w275k6z8"
+    },
+    {
+      "id": "_wh5i6dy27",
+      "name": "Демонтаж электрощита до 48 мод",
+      "unit": "шт",
+      "price": 2000,
+      "categoryId": "_1w275k6z8"
+    },
+    {
+      "id": "_g8v04sy44",
+      "name": "Штробление нишы под щит 12 мод бетон до 100 мм",
+      "unit": "шт",
+      "price": 8400,
+      "categoryId": "_syxx7sh7y"
+    },
+    {
+      "id": "_6nz9y8po2",
+      "name": "Штробление нишы под щит 12 мод бетон монолит до 100 мм",
+      "unit": "шт",
+      "price": 10200,
+      "categoryId": "_syxx7sh7y"
+    },
+    {
+      "id": "_65abt7dr2",
+      "name": "Штробление нишы под щит 24 мод бетон до 100 мм ",
+      "unit": "шт",
+      "price": 16800,
+      "categoryId": "_syxx7sh7y"
+    },
+    {
+      "id": "_3es6bkn51",
+      "name": "Штробление нишы под щит 24 мод бетон монолит до 100 мм",
+      "unit": "шт",
+      "price": 20400,
+      "categoryId": "_syxx7sh7y"
+    },
+    {
+      "id": "_8fdwqxx2z",
+      "name": "Штробление нишы под щит 36 мод бетон до 100 мм",
+      "unit": "шт",
+      "price": 25200,
+      "categoryId": "_syxx7sh7y"
+    },
+    {
+      "id": "_hfcw5zyr7",
+      "name": "Штробление нишы под щит 36 мод бетон монолит до 100 мм",
+      "unit": "шт",
+      "price": 30600,
+      "categoryId": "_syxx7sh7y"
+    },
+    {
+      "id": "_sd67kvu38",
+      "name": "Штробление нишы под щит 48 мод бетон до 100 мм",
+      "unit": "шт",
+      "price": 33600,
+      "categoryId": "_syxx7sh7y"
+    },
+    {
+      "id": "_j6b5092wy",
+      "name": "Штробление нишы под щит 48 мод бетон монолит до 100 мм",
+      "unit": "шт",
+      "price": 40800,
+      "categoryId": "_syxx7sh7y"
+    },
+    {
+      "id": "_aje29wcv0",
+      "name": "Штробление нишы под щит 60 мод бетон до 100 мм",
+      "unit": "шт",
+      "price": 42000,
+      "categoryId": "_syxx7sh7y"
+    },
+    {
+      "id": "_jz4yrj4iz",
+      "name": "Штробление нишы под щит 60 мод бетон монолит до 100 мм",
+      "unit": "шт",
+      "price": 51000,
+      "categoryId": "_syxx7sh7y"
+    },
+    {
+      "id": "_xf9nc16nt",
+      "name": "Монтаж щита навесного 12 мод",
+      "unit": "шт",
+      "price": 1500,
+      "categoryId": "_syxx7sh7y"
+    },
+    {
+      "id": "_fnjsllgkz",
+      "name": "Монтаж щита навесного 24 мод",
+      "unit": "шт",
+      "price": 2000,
+      "categoryId": "_syxx7sh7y"
+    },
+    {
+      "id": "_7rctc38wt",
+      "name": "Монтаж щита навесного 36 мод",
+      "unit": "шт",
+      "price": 2500,
+      "categoryId": "_syxx7sh7y"
+    },
+    {
+      "id": "_4dg41bl41",
+      "name": "Монтаж щита навесного 48 мод",
+      "unit": "шт",
+      "price": 3000,
+      "categoryId": "_syxx7sh7y"
+    },
+    {
+      "id": "_otwqnxud1",
+      "name": "Монтаж щита навесного 60 мод",
+      "unit": "шт",
+      "price": 3500,
+      "categoryId": "_syxx7sh7y"
+    },
+    {
+      "id": "_mppsbkwqn",
+      "name": "Монтаж кабеля открытым способом",
+      "unit": "м.п.",
+      "price": 140,
+      "categoryId": "cat_2"
+    },
+    {
+      "id": "_2yirk0cn8",
+      "name": "Монтаж кабеля по полу",
+      "unit": "м.п.",
+      "price": 140,
+      "categoryId": "cat_2"
+    },
+    {
+      "id": "_bu1ri3pkh",
+      "name": "Укладка кабеля в штробу",
+      "unit": "м.п.",
+      "price": 140,
+      "categoryId": "cat_2"
+    },
+    {
+      "id": "_21npl7cn4",
+      "name": "Монтаж кабеля в гофре",
+      "unit": "м.п.",
+      "price": 210,
+      "categoryId": "cat_2"
+    },
+    {
+      "id": "_l80c8ky2i",
+      "name": "Затяжка кабеля в гофру",
+      "unit": "м.п.",
+      "price": 80,
+      "categoryId": "cat_2"
+    },
+    {
+      "id": "_0uce013hs",
+      "name": "Монтаж слаботочного кабеля",
+      "unit": "м.п.",
+      "price": 110,
+      "categoryId": "cat_2"
+    },
+    {
+      "id": "_ptai0ud0m",
+      "name": "Монтаж распределительной коробки",
+      "unit": "шт",
+      "price": 250,
+      "categoryId": "cat_2"
+    },
+    {
+      "id": "_20e8h26w3",
+      "name": "Сборка распределительной коробки",
+      "unit": "соед",
+      "price": 300,
+      "categoryId": "cat_2"
+    },
+    {
+      "id": "_3fdkybi19",
+      "name": "Сборка распределительной коробки (3 соединения)",
+      "unit": "шт",
+      "price": 900,
+      "categoryId": "cat_2"
+    },
+    {
+      "id": "_uaprwoh6f",
+      "name": "Сборка распределительной коробки (4 соединения)",
+      "unit": "шт",
+      "price": 1200,
+      "categoryId": "cat_2"
+    },
+    {
+      "id": "_tklez63lx",
+      "name": "Сборка распределительной коробки (5 соединений)",
+      "unit": "шт",
+      "price": 1500,
+      "categoryId": "cat_2"
+    },
+    {
+      "id": "_3kp25bjcz",
+      "name": "Установка подрозетника",
+      "unit": "шт",
+      "price": 120,
+      "categoryId": "cat_2"
+    },
+    {
+      "id": "_x0vsofofz",
+      "name": "Монтаж вводного кабеля",
+      "unit": "м.п.",
+      "price": 600,
+      "categoryId": "cat_2"
+    },
+    {
+      "id": "_7ewei85gr",
+      "name": "Монтаж временного освещения",
+      "unit": "Точ",
+      "price": 500,
+      "categoryId": "cat_2"
+    },
+    {
+      "id": "_448x0umbn",
+      "name": "Установка КУП - без расключения",
+      "unit": "шт",
+      "price": 500,
+      "categoryId": "cat_2"
+    },
+    {
+      "id": "_juhz4kmb7",
+      "name": "Расключение КУП",
+      "unit": "Соед",
+      "price": 200,
+      "categoryId": "cat_2"
+    },
+    {
+      "id": "_qxeu9bpvd",
+      "name": "Установка розетки",
+      "unit": "шт",
+      "price": 600,
+      "categoryId": "_zyf9on56l"
+    },
+    {
+      "id": "_ta0keea1h",
+      "name": "Установка выключателя до 2 клавиш",
+      "unit": "шт",
+      "price": 600,
+      "categoryId": "_zyf9on56l"
+    },
+    {
+      "id": "_8at4oa6r0",
+      "name": "Установка проходного выключателя",
+      "unit": "шт",
+      "price": 800,
+      "categoryId": "_zyf9on56l"
+    },
+    {
+      "id": "_der0ye4y9",
+      "name": "Установка перекрестного выклбчателя",
+      "unit": "шт",
+      "price": 800,
+      "categoryId": "_zyf9on56l"
+    },
+    {
+      "id": "_nkcfbb8s8",
+      "name": "Установка светильника простого",
+      "unit": "шт",
+      "price": 1500,
+      "categoryId": "_zyf9on56l"
+    },
+    {
+      "id": "_p3gine916",
+      "name": "Установка бра",
+      "unit": "шт",
+      "price": 1500,
+      "categoryId": "_zyf9on56l"
+    },
+    {
+      "id": "_pfkr24tbq",
+      "name": "Установка люстры простой",
+      "unit": "шт",
+      "price": 2000,
+      "categoryId": "_zyf9on56l"
+    },
+    {
+      "id": "_a2jg3zu2r",
+      "name": "Установка люстры двухклавишной простой",
+      "unit": "шт",
+      "price": 2500,
+      "categoryId": "_zyf9on56l"
+    },
+    {
+      "id": "_wc176p342",
+      "name": "Установка люстры сложной",
+      "unit": "% от стоим",
+      "price": 40,
+      "categoryId": "_zyf9on56l"
+    },
+    {
+      "id": "_xusphhbdv",
+      "name": "Уборка помещения под пылесос",
+      "unit": "кв. м.",
+      "price": 500,
+      "categoryId": "_plmkyoxf5"
+    },
+    {
+      "id": "_u6vpvoqhx",
+      "name": "Срочный выезд в ночное время",
+      "unit": "шт",
+      "price": 20000,
+      "categoryId": "_plmkyoxf5"
+    },
+    {
+      "id": "_l9iv0i7dk",
+      "name": "Пнр без маркировки",
+      "unit": "шт",
+      "price": 5000,
+      "categoryId": "cat_3"
+    },
+    {
+      "id": "_aqnl14i04",
+      "name": "Пнр с маркировкой на 48 мод",
+      "unit": "шт",
+      "price": 20000,
+      "categoryId": "cat_3"
+    },
+    {
+      "id": "_3r4iet96g",
+      "name": "Демотнтаж бра простое",
+      "unit": "шт",
+      "price": 500,
+      "categoryId": "_1w275k6z8"
+    },
+    {
+      "id": "_7pkjeido8",
+      "name": "Демонтаж-монтаж бра простое",
+      "unit": "шт",
+      "price": 1000,
+      "categoryId": "_1w275k6z8"
+    },
+    {
+      "id": "_mvhuz9g0s",
+      "name": "Бра простое",
+      "unit": "шт",
+      "price": 1500,
+      "categoryId": "cat_2"
+    },
+    {
+      "id": "_sy4r9555x",
+      "name": "Бра сложное",
+      "unit": "шт",
+      "price": 3000,
+      "categoryId": "cat_2"
+    },
+    {
+      "id": "_3jy81zcuz",
+      "name": "Монтаж-демонтаж бра простое",
+      "unit": "шт",
+      "price": 1000,
+      "categoryId": "cat_2"
+    },
+    {
+      "id": "_svza8q828",
+      "name": "Штроба под щит бетон монолит 50х100х1500",
+      "unit": "шт",
+      "price": 7500,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_w619tgdgh",
+      "name": "Штроба под щит бетон панелька 30х200х1500",
+      "unit": "шт",
+      "price": 9000,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_pm0on3cth",
+      "name": "Штроба под щит бетон панелька 30х100х1500",
+      "unit": "шт",
+      "price": 4500,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_d0g123t9l",
+      "name": "Штроба под щит бетон панелька 50х200х1500",
+      "unit": "шт",
+      "price": 15000,
+      "categoryId": "cat_1"
+    },
+    {
+      "id": "_5ezgnv0xq",
+      "name": "Штроба под щит бетон панелька 50х100х1500",
+      "unit": "шт",
+      "price": 7500,
+      "categoryId": "cat_1"
+    }
+  ],
+  "exportDate": "2026-10-13T12:33:58.634Z"
+}
