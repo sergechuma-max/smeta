@@ -3,16 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
-<meta name="theme-color" content="#121419">
-<meta name="format-detection" content="telephone=no">
-<title>Штробление — Электромонтаж</title>
-<meta name="application-name" content="Штробление">
+<title>Смета — Электромонтаж</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Смета">
-<meta name="mobile-web-app-capable" content="yes">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='42' fill='%23ffb52e'/%3E%3Cpath d='M108 32 64 108h34l-6 52 44-76h-34l6-52z' fill='%23231a05'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='96' fill='%232563eb'/><path d='M256 60 L160 270 L220 270 L190 452 L352 240 L285 240 L320 60 Z' fill='%23fff'/></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='96' fill='%232563eb'/><path d='M256 60 L160 270 L220 270 L190 452 L352 240 L285 240 L320 60 Z' fill='%23fff'/></svg>">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Rubik:wght@400;500;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -636,7 +637,7 @@
       <span class="bolt">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4.8 13.4h5.3L10.6 22l8.6-11.4h-5.3L13 2Z"/></svg>
       </span>
-      СЕРЖ · ЭЛЕКТРОМОНТАЖ
+      Штробление • <br> Электромонтаж
     </div>
     <div class="date" id="today"></div>
   </header>
@@ -1840,13 +1841,13 @@ async function mat_sharePDF(mode){
 window.addEventListener('load', mat_loadData);
 </script>
 
+<!-- PWA -->
 <script>
-/* ═══════════ PWA: SERVICE WORKER ═══════════ */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('service-worker.js')
+    navigator.serviceWorker.register('./sw.js')
       .then(reg => console.log('SW зарегистрирован:', reg.scope))
-      .catch(err => console.warn('SW ошибка:', err));
+      .catch(err => console.log('SW ошибка:', err));
   });
 }
 </script>
